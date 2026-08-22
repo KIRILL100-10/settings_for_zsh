@@ -6,11 +6,11 @@ USE_POWERLINE="true"
 HAS_WIDECHARS="false"
 # Source manjaro-zsh-configuration
 if [[ -e /usr/share/zsh/manjaro-zsh-config ]]; then
-    source /usr/share/zsh/manjaro-zsh-config
+  source /usr/share/zsh/manjaro-zsh-config
 fi
 # Use manjaro zsh prompt
 if [[ -e /usr/share/zsh/manjaro-zsh-prompt ]]; then
-    source /usr/share/zsh/manjaro-zsh-prompt
+  source /usr/share/zsh/manjaro-zsh-prompt
 fi
 
 tomov() {
@@ -31,6 +31,19 @@ towav() {
 
 splitaudio() {
     demucs -d cuda "$1"
+}
+
+checkmedia() {
+    if [[ -n "$1" ]]; then
+        if [[ -f "$1" ]]; then
+            echo "Analyzing media metadata for '$1'... 🎥📊"
+            mediainfo "$1"
+        else
+            echo "Bro, media file '$1' not found! 🛑"
+        fi
+    else
+        echo "Bro, specify a video/audio file! For example: checkmedia movie.mp4 🎬"
+    fi
 }
 
 runpy() {
@@ -173,3 +186,6 @@ alias dd="dockerydo"
 alias dclean="docker system prune -a --volumes"
 alias tcc="temperature-converter-cli"
 alias myos="fastfetch"
+alias k8s-start="sudo systemctl start k3s && echo 'Cloud infrastructure initialized! Node Ready 🚀🐳'"
+alias k8s-stop="sudo systemctl stop k3s && echo 'Cloud infrastructure stopped. RAM released! 🧹✨'"
+alias k8s-status="sudo systemctl status k3s"

@@ -10,6 +10,7 @@ An optimized, feature-rich, and automation-heavy `.zshrc` configuration designed
 * **`extsound <file>`** – Extracts and strips audio from video tracks into a clean 16-bit WAV file (`pcm_s16le`).
 * **`towav <file>`** – Converts an input file's audio track into studio-standard 24-bit 48kHz WAV format (`pcm_s24le`).
 * **`splitaudio <file>`** – Splits audio into 4 separate stems (vocals, drums, bass, other) using AI via `demucs` with CUDA hardware acceleration.
+* **`checkmedia <file>`** – Runs deep technical analysis of video or audio metadata using `mediainfo` to verify codecs, containers, and precise frame rates.
 
 ### 🐍 Python & Docker Automation
 * **`runpy [file]`** – Smart Python runner. Executes the specified file, or automatically falls back to `main.py` / `app.py` if no file is provided.
@@ -38,6 +39,9 @@ An optimized, feature-rich, and automation-heavy `.zshrc` configuration designed
 * `gg` / `dd` – Quick-launch triggers for `git-graph` and `dockerydo`.
 * `tcc` – Shorthand for `temperature-converter-cli`, a custom temperature conversion utility **developed by me** and available in the **AUR**.
 * `myos` – Displays clean system hardware specs using `fastfetch`.
+* `k8s-start` – Initializes your lightweight Kubernetes (`k3s`) cluster on demand and verifies node status.
+* `k8s-stop` – Stops the Kubernetes cluster completely and releases system RAM from background daemons.
+* `k8s-status` – Checks the active `systemd` runtime logs and process state of the `k3s` server.
 
 ## 📄 License
 This project is licensed under the MIT License — feel free to use, modify, and distribute it!
