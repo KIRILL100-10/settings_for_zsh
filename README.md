@@ -36,7 +36,7 @@ An optimized, feature-rich, and automation-heavy `.zshrc` configuration designed
 * `venv` – Instantly creates and activates a local `.venv` environment.
 * `migrations` – Groups Django `makemigrations` and `migrate` into one fast command.
 * `dclean` – Nukes unused Docker cache, volumes, container images, and networks.
-* `gg` / `dd` – Quick-launch triggers for `git-graph` and `dockerydo`.
+* `gg` – Quick-launch trigger for `git-graph`.
 * `tcc` – Shorthand for `temperature-converter-cli`, a custom temperature conversion utility **developed by me** and available in the **AUR**.
 * `myos` – Displays clean system hardware specs using `fastfetch`.
 * `k8s-start` – Initializes your lightweight Kubernetes (`k3s`) cluster on demand and verifies node status.
