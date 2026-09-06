@@ -1,4 +1,4 @@
-# My Manjaro Zsh Configuration 🚀
+# My CachyOS Zsh Configuration 🚀
 
 An optimized, feature-rich, and automation-heavy `.zshrc` configuration designed specifically for Manjaro Linux. It focuses on developer velocity, media conversion, and system cleaning with helpful visual feedback.
 
