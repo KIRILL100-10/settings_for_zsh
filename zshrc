@@ -1,17 +1,14 @@
-# Use powerline
-USE_POWERLINE="true"
-# Has weird character width
-# Example:
-#    is not a diamond
-HAS_WIDECHARS="false"
-# Source manjaro-zsh-configuration
-if [[ -e /usr/share/zsh/manjaro-zsh-config ]]; then
-  source /usr/share/zsh/manjaro-zsh-config
+# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
+# Initialization code that may require console input (password prompts, [y/n]
+# confirmations, etc.) must go above this block; everything else may go below.
+if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
-# Use manjaro zsh prompt
-if [[ -e /usr/share/zsh/manjaro-zsh-prompt ]]; then
-  source /usr/share/zsh/manjaro-zsh-prompt
-fi
+
+source /usr/share/cachyos-zsh-config/cachyos-config.zsh
+
+# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
+[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
 tomov() {
     ffmpeg -i "$1" -c:v dnxhd -profile:v dnxhr_hqx -pix_fmt yuv422p10le -c:a pcm_s24le -ar 48000 "${1%.*}.mov"
@@ -185,6 +182,11 @@ alias gg="git-graph"
 alias dclean="docker system prune -a --volumes"
 alias tcc="temperature-converter-cli"
 alias myos="fastfetch"
-alias k8s-start="sudo systemctl start k3s && echo 'Cloud infrastructure initialized! Node Ready 🚀🐳'"
+alias k8s-start="sudo systemctl start k3s && mkdir -p ~/.kube && sudo cp /etc/rancher/k3s/k3s.yaml ~/.kube/config && sudo chown \$(id -u):\$(id -g) ~/.kube/config && chmod 600 ~/.kube/config && echo 'Cloud infrastructure initialized! Node Ready 🚀🐳'"
 alias k8s-stop="sudo systemctl stop k3s && echo 'Cloud infrastructure stopped. RAM released! 🧹✨'"
 alias k8s-status="sudo systemctl status k3s"
+alias k="kubectl"
+alias kgp="kubectl get pods"
+alias kgs="kubectl get services"
+
+source <(kubectl completion zsh)
