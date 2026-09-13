@@ -188,5 +188,6 @@ alias k8s-status="sudo systemctl status k3s"
 alias k="kubectl"
 alias kgp="kubectl get pods"
 alias kgs="kubectl get services"
+alias updatezsh="p10k configure"
 
 source <(kubectl completion zsh)
