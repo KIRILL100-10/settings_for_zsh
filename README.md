@@ -1,6 +1,6 @@
-# My CachyOS Zsh Configuration 🚀
+# My Fedora Zsh Configuration 🚀
 
-An optimized, feature-rich, and automation-heavy `.zshrc` configuration designed specifically for Manjaro Linux. It focuses on developer velocity, media conversion, and system cleaning with helpful visual feedback.
+An optimized, feature-rich, and automation-heavy `.zshrc` configuration designed specifically for Fedora Linux. It focuses on developer velocity, media conversion, and system cleaning with helpful visual feedback.
 
 ## 🛠️ Functions
 
@@ -19,7 +19,6 @@ An optimized, feature-rich, and automation-heavy `.zshrc` configuration designed
 * **`drawdocker [file]`** – Generates and automatically opens a visual PNG graph architecture of your Dockerfile using `dockerfilegraph`.
 
 ### 🛡️ Git, C++, & Project Scaffolding
-* **`drawgit`** – Generates a comprehensive visual map of your repository branches and commit history using `git-big-picture`.
 * **`checkcpp [path]`** – Runs deep, conclusive static analysis for C/C++ projects using `cppcheck`.
 * **`makeignore <tech>`** – Instantly generates official boilerplate `.gitignore` files via `add-gitignore`.
 * **`tomd <file>`** / **`toword <file>`** – Rapid bi-directional document conversion between Markdown and Word (`.docx`) using `pandoc`.
@@ -28,17 +27,13 @@ An optimized, feature-rich, and automation-heavy `.zshrc` configuration designed
 * **`liveserver`** – Spins up a hot-reloading dev server for Frontend (`html`, `css`, `js`, `vue`) via `browser-sync`.
 * **`staticserver [port]`** – Launches a quick Python HTTP server (default port `5000`) and automatically opens it in your browser.
 
-### 🧹 System Maintenance
-* **`deleteorphans`** – Scans, calculates, and safely removes unneeded orphan packages from your Manjaro system using `yay`.
-
 ## ⚡ Supercharged Aliases
 
 * `venv` – Instantly creates and activates a local `.venv` environment.
 * `migrations` – Groups Django `makemigrations` and `migrate` into one fast command.
 * `dclean` – Nukes unused Docker cache, volumes, container images, and networks.
-* `gg` – Quick-launch trigger for `git-graph`.
-* `tcc` – Shorthand for `temperature-converter-cli`, a custom temperature conversion utility **developed by me** and available in the **AUR**.
 * `myos` – Displays clean system hardware specs using `fastfetch`.
+* `mygit` – Displays project specs using `onefetch`.
 * `k8s-start` – Initializes your lightweight Kubernetes (`k3s`) cluster on demand and verifies node status.
 * `k8s-stop` – Stops the Kubernetes cluster completely and releases system RAM from background daemons.
 * `k8s-status` – Checks the active `systemd` runtime logs and process state of the `k3s` server.
