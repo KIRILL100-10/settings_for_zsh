@@ -177,19 +177,6 @@ checkdocker() {
     fi
 }
 
-drawdocker() {
-    local file="${1:-Dockerfile}"
-    if [[ -f "$file" ]]; then
-        echo "Generating visual graph for '$file'... 🎨"
-        dockerfilegraph -f "$file" -o png --legend
-        echo "Done! Automatically opening the image... ✨"
-
-        xdg-open "$PWD/Dockerfile.png" &>/dev/null &
-    else
-        echo "Bro, file '$file' not found! 🐳"
-    fi
-}
-
 checkcpp() {
     local target="${1:-.}"
     if [[ -e "$target" ]]; then
@@ -210,26 +197,6 @@ makeignore() {
     add-gitignore "$1"
     if [[ -f ".gitignore" ]]; then
         echo "Done! File .gitignore for '$1' successfully created in the current directory. ✅"
-    fi
-}
-
-tomd() {
-    if [[ -f "$1" ]]; then
-        echo "Converting document '$1' into clean Markdown... 📄➡️📝"
-        pandoc "$1" -o "${1%.*}.md"
-        echo "Done! File '${1%.*}.md' successfully created. ✨"
-    else
-        echo "Bro, file '$1' not found! 🛑"
-    fi
-}
-
-toword() {
-    if [[ -f "$1" ]]; then
-        echo "Converting Markdown '$1' into an official Word document... 📝➡️📄"
-        pandoc "$1" -o "${1%.*}.docx"
-        echo "Done! File '${1%.*}.docx' successfully created. ✅"
-    else
-        echo "Bro, file '$1' not found! 🛑"
     fi
 }
 
@@ -273,4 +240,3 @@ alias kgs="kubectl get services"
 alias updatezsh="p10k configure"
 
 source <(kubectl completion zsh)
-export PATH="$HOME/.local/bin:$HOME/go/bin:$PATH"
