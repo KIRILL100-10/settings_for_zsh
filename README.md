@@ -37,6 +37,7 @@ An optimized, feature-rich, and automation-heavy `.zshrc` configuration designed
 * `k8s-stop` – Stops the Kubernetes cluster completely and releases system RAM from background daemons.
 * `k8s-status` – Checks the active `systemd` runtime logs and process state of the `k3s` server.
 * `updatezsh` - Updates the Powerlevel10k configuration.
+* `updatezsh` - Updates packages.
 
 ## 📄 License
 This project is licensed under the MIT License — feel free to use, modify, and distribute it!
