@@ -17,9 +17,10 @@ An optimized, feature-rich, and automation-heavy `.zshrc` configuration designed
 * **`va`** – Fast-activates your local Python virtual environment (`.venv`).
 * **`checkdocker [file]`** – Lints your Dockerfile using `hadolint` to catch bad practices.
 
-### 🛡️ Git, C++
+### 🛡️ Git, C++ sh
 * **`checkcpp [path]`** – Runs deep, conclusive static analysis for C/C++ projects using `cppcheck`.
 * **`makeignore <tech>`** – Instantly generates official boilerplate `.gitignore` files via `add-gitignore`.
+* **`checkshell [path]`** – Runs  analysis for shell scripts using `shellcheck`.
 
 ### 🌐 Web Servers & Development
 * **`liveserver`** – Spins up a hot-reloading dev server for Frontend (`html`, `css`, `js`, `vue`) via `browser-sync`.

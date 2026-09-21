@@ -187,6 +187,15 @@ checkcpp() {
     fi
 }
 
+checkshell() {
+    local file="${1:-script.sh}"
+    if [[ -f "$file" ]]; then
+        shellcheck "$file"
+    else
+        echo "Bro, file '$file' not found! 🐚"
+    fi
+}
+
 makeignore() {
     if [[ -z "$1" ]]; then
         echo "Bro, specify the technology! For example: makeignore python or makeignore node 🛠"
