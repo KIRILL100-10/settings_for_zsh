@@ -247,7 +247,6 @@ staticserver() {
     python -m http.server "$port"
 }
 
-alias update-all="echo '=== 1. Обновление системы Fedora ===' && sudo dnf upgrade --refresh && echo '=== 2. Обновление глобальных NPM пакетов ===' && sudo npm update -g && echo '=== 3. Обновление редактора Zed ===' && curl -f https://zed.dev/install.sh | sh && echo '=== 4. Обновление пользовательских PIP пакетов ===' && pip list --outdated --format=freeze | grep -v '^\-e' | cut -d = -f 1 | xargs -n1 pip install --user --upgrade 2>/dev/null; echo 'Все системы обновлены! 🚀🔥'"
 alias venv="python -m venv .venv && source .venv/bin/activate"
 alias postgresi="postgres-language-server init"
 alias npmi="npm init -y"
