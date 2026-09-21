@@ -12,16 +12,14 @@ An optimized, feature-rich, and automation-heavy `.zshrc` configuration designed
 * **`splitaudio <file>`** – Splits audio into 4 separate stems (vocals, drums, bass, other) using AI via `demucs` with CUDA hardware acceleration.
 * **`checkmedia <file>`** – Runs deep technical analysis of video or audio metadata using `mediainfo` to verify codecs, containers, and precise frame rates.
 
-### 🐍 Python & Docker Automation
+### 🐍 Python & Docker
 * **`runpy [file]`** – Smart Python runner. Executes the specified file, or automatically falls back to `main.py` / `app.py` if no file is provided.
 * **`va`** – Fast-activates your local Python virtual environment (`.venv`).
 * **`checkdocker [file]`** – Lints your Dockerfile using `hadolint` to catch bad practices.
-* **`drawdocker [file]`** – Generates and automatically opens a visual PNG graph architecture of your Dockerfile using `dockerfilegraph`.
 
-### 🛡️ Git, C++, & Project Scaffolding
+### 🛡️ Git, C++
 * **`checkcpp [path]`** – Runs deep, conclusive static analysis for C/C++ projects using `cppcheck`.
 * **`makeignore <tech>`** – Instantly generates official boilerplate `.gitignore` files via `add-gitignore`.
-* **`tomd <file>`** / **`toword <file>`** – Rapid bi-directional document conversion between Markdown and Word (`.docx`) using `pandoc`.
 
 ### 🌐 Web Servers & Development
 * **`liveserver`** – Spins up a hot-reloading dev server for Frontend (`html`, `css`, `js`, `vue`) via `browser-sync`.
