@@ -258,3 +258,6 @@ alias kgs="kubectl get services"
 alias updatezsh="p10k configure"
 
 source <(kubectl completion zsh)
+
+export PATH="$HOME/.local/bin:$PATH"
+
