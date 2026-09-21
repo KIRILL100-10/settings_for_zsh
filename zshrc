@@ -200,6 +200,24 @@ makeignore() {
     fi
 }
 
+deleteorphans() {
+    echo "Checking for unused dependencies in Fedora... 🔍"
+
+    local orphans=$(dnf list --autoremove 2>/dev/null | tail -n +2)
+
+    if [[ -n "$orphans" && "$orphans" != *"Доступные пакеты"* && "$orphans" != *"Available Packages"* ]]; then
+        local count=$(echo "$orphans" | wc -l)
+        echo "Found orphans: $count pcs. Removing... 🧹"
+        echo "----------------------------------------"
+        echo "$orphans"
+        echo "----------------------------------------"
+
+        sudo dnf autoremove
+    else
+        echo "System is clean, no unused dependencies to remove! ✨"
+    fi
+}
+
 va() {
     if [[ -f ".venv/bin/activate" ]]; then
         source .venv/bin/activate
