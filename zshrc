@@ -115,7 +115,12 @@ source $ZSH/oh-my-zsh.sh
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+
+
 export KUBECONFIG=~/.kube/config
+export PATH="$HOME/.local/bin:$PATH"
+source <(kubectl completion zsh)
+
 
 tomov() {
     ffmpeg -i "$1" -c:v dnxhd -profile:v dnxhr_hqx -pix_fmt yuv422p10le -c:a pcm_s24le -ar 48000 "${1%.*}.mov"
@@ -147,24 +152,6 @@ checkmedia() {
         fi
     else
         echo "Bro, specify a video/audio file! For example: checkmedia movie.mp4 🎬"
-    fi
-}
-
-runpy() {
-    if [[ -n "$1" ]]; then
-        if [[ -f "$1" ]]; then
-            python "$1"
-        else
-            echo "Bro, file '$1' not found in this directory! 🛑"
-        fi
-    else
-        if [[ -f "main.py" ]]; then
-            python main.py
-        elif [[ -f "app.py" ]]; then
-            python app.py
-        else
-            echo "Bro, specify a file (e.g., runpy test.py) or create main.py/app.py 🐍"
-        fi
     fi
 }
 
@@ -227,11 +214,50 @@ deleteorphans() {
     fi
 }
 
+venv() {
+    if [[ -d ".venv" ]]; then
+        echo "Bro, .venv already exists here! Just type 'va' to activate it 🐍🔥"
+    else
+        echo "Creating Python virtual environment in '.venv'... 🛠🐍"
+        python -m venv .venv
+
+        if [[ -f ".venv/bin/activate" ]]; then
+            echo "Activating new environment... 🚀"
+            source .venv/bin/activate
+
+            echo "Upgrading pip inside virtual environment... 🧹"
+            pip install --upgrade pip &>/dev/null
+
+            echo "Done! Virtual environment successfully initialized and active. ✅"
+        else
+            echo "Oops, something went wrong during .venv creation! 🛑"
+        fi
+    fi
+}
+
 va() {
     if [[ -f ".venv/bin/activate" ]]; then
         source .venv/bin/activate
     else
         echo "Bro, there is no virtual environment here! Type 'venv' first 🐍"
+    fi
+}
+
+runpy() {
+    if [[ -n "$1" ]]; then
+        if [[ -f "$1" ]]; then
+            python "$1"
+        else
+            echo "Bro, file '$1' not found in this directory! 🛑"
+        fi
+    else
+        if [[ -f "main.py" ]]; then
+            python main.py
+        elif [[ -f "app.py" ]]; then
+            python app.py
+        else
+            echo "Bro, specify a file (e.g., runpy test.py) or create main.py/app.py 🐍"
+        fi
     fi
 }
 
@@ -247,7 +273,6 @@ staticserver() {
     python -m http.server "$port"
 }
 
-alias venv="python -m venv .venv && source .venv/bin/activate"
 alias postgresi="postgres-language-server init"
 alias npmi="npm init -y"
 alias startdjango="python manage.py runserver"
@@ -265,8 +290,3 @@ alias k="kubectl"
 alias kgp="kubectl get pods"
 alias kgs="kubectl get services"
 alias updatezsh="p10k configure"
-
-source <(kubectl completion zsh)
-
-export PATH="$HOME/.local/bin:$PATH"
-
