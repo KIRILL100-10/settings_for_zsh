@@ -28,8 +28,7 @@ An optimized, feature-rich, and automation-heavy `.zshrc` configuration designed
 
 ## ⚡ Supercharged Aliases
 
-* `venv` – Instantly creates and activates a local `.venv` environment.
-* `migrations` – Groups Django `makemigrations` and `migrate` into one fast command.
+* `venv && va` – Instantly creates and activates a local `.venv` environment.
 * `dclean` – Nukes unused Docker cache, volumes, container images, and networks.
 * `myos` – Displays clean system hardware specs using `fastfetch`.
 * `mygit` – Displays project specs using `onefetch`.
@@ -37,7 +36,7 @@ An optimized, feature-rich, and automation-heavy `.zshrc` configuration designed
 * `k8s-stop` – Stops the Kubernetes cluster completely and releases system RAM from background daemons.
 * `k8s-status` – Checks the active `systemd` runtime logs and process state of the `k3s` server.
 * `updatezsh` - Updates the Powerlevel10k configuration.
-* `updatezsh` - Updates packages.
+* `update-all` - Updates all packages.
 
 ## 📄 License
 This project is licensed under the MIT License — feel free to use, modify, and distribute it!

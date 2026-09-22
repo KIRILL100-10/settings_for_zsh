@@ -119,118 +119,146 @@ source $ZSH/oh-my-zsh.sh
 
 export KUBECONFIG=~/.kube/config
 export PATH="$HOME/.local/bin:$PATH"
+export LIBVA_DRIVER_NAME=nvidia
 source <(kubectl completion zsh)
 
-
 tomov() {
+    if [ -z "$1" ]; then
+        echo -e "\e[31m[ ❌ ERROR ] Please specify a file! Example: tomov input.mp4\e[0m"
+        return 1
+    fi
+    local start_time=$(date +%s)
+    echo -e "\e[34m[ 🚀 PROCESS ] Transcoding '$1' to DNxHR HQX (.mov)... Hardware rendering enabled.\e[0m"
+
     ffmpeg -i "$1" -c:v dnxhd -profile:v dnxhr_hqx -pix_fmt yuv422p10le -c:a pcm_s24le -ar 48000 "${1%.*}.mov"
+
+    local end_time=$(date +%s)
+    local duration=$((end_time - start_time))
+    echo -e "\e[32m[ 🎉 DONE ] Successfully encoded in ${duration} seconds!\e[0m"
 }
 
 tomp4() {
+    if [ -z "$1" ]; then
+        echo -e "\e[31m[ ❌ ERROR ] Please specify a file! Example: tomp4 master.mov\e[0m"
+        return 1
+    fi
+    local start_time=$(date +%s)
+    echo -e "\e[34m[ 🚀 PROCESS ] Compressing '$1' to H.264 MP4 (CRF 20)... High efficiency.\e[0m"
+
     ffmpeg -i "$1" -vcodec libx264 -pix_fmt yuv420p -crf 20 -acodec aac "${1%.*}.mp4"
+
+    local end_time=$(date +%s)
+    local duration=$((end_time - start_time))
+    echo -e "\e[32m[ 🎉 DONE ] Compression completed in ${duration} seconds!\e[0m"
 }
 
 extsound() {
+    if [ -z "$1" ]; then echo -e "\e[31m[ ❌ ERROR ] Specify a file!\e[0m"; return 1; fi
+    echo -e "\e[34m[ 🚀 PROCESS ] Extracting audio to WAV 16-bit...\e[0m"
     ffmpeg -i "$1" -vn -c:a pcm_s16le -ar 48000 "${1%.*}.wav"
+    echo -e "\e[32m[ 🎉 DONE ] Audio track saved!\e[0m"
 }
 
 towav() {
+    if [ -z "$1" ]; then echo -e "\e[31m[ ❌ ERROR ] Specify a file!\e[0m"; return 1; fi
+    echo -e "\e[34m[ 🚀 PROCESS ] Upconverting audio to WAV 24-bit PCM...\e[0m"
     ffmpeg -i "$1" -ar 48000 -c:a pcm_s24le "${1%.*}.wav"
+    echo -e "\e[32m[ 🎉 DONE ] Audio upconverted successfully!\e[0m"
 }
 
 splitaudio() {
+    if [ -z "$1" ]; then echo -e "\e[31m[ ❌ ERROR ] Specify an audio file!\e[0m"; return 1; fi
+    echo -e "\e[34m[ 🧠 AI PROCESS ] Running Demucs neural network on CUDA (NVIDIA GPU)...🏼\e[0m"
     demucs -d cuda "$1"
 }
 
 checkmedia() {
     if [[ -n "$1" ]]; then
         if [[ -f "$1" ]]; then
-            echo "Analyzing media metadata for '$1'... 🎥📊"
+            echo -e "\e[34m[ 🔍 ANALYZING ] Fetching technical metadata for '$1'... 🎥📊\e[0m"
             mediainfo "$1"
         else
-            echo "Bro, media file '$1' not found! 🛑"
+            echo -e "\e[31m[ ❌ ERROR ] Media file '$1' not found!\e[0m"
         fi
     else
-        echo "Bro, specify a video/audio file! For example: checkmedia movie.mp4 🎬"
+        echo -e "\e[33m[ 💡 INFO ] Specify a file! Example: checkmedia movie.mp4\e[0m"
     fi
 }
 
 checkdocker() {
     local file="${1:-Dockerfile}"
     if [[ -f "$file" ]]; then
+        echo -e "\e[34m[ 🔍 LINTING ] Running Hadolint on '$file'...\e[0m"
         hadolint "$file"
     else
-        echo "Bro, file '$file' not found! 🐳"
+        echo -e "\e[31m[ ❌ ERROR ] Dockerfile '$file' not found!\e[0m"
     fi
 }
 
 checkcpp() {
     local target="${1:-.}"
     if [[ -e "$target" ]]; then
-        echo "Running deep C/C++ analysis for '$target'... 🛠⚙️"
+        echo -e "\e[34m[ 🔍 ANALYSIS ] Running deep C/C++ analysis on '$target'... 🛠⚙️\e[0m"
         cppcheck --enable=all --inconclusive --force "$target"
     else
-        echo "Bro, file or directory '$target' not found! 🛑"
+        echo -e "\e[31m[ ❌ ERROR ] Directory or file '$target' not found!\e[0m"
     fi
 }
 
 checkshell() {
     local file="${1:-script.sh}"
     if [[ -f "$file" ]]; then
+        echo -e "\e[34m[ 🔍 LINTING ] Running ShellCheck on '$file'...\e[0m"
         shellcheck "$file"
     else
-        echo "Bro, file '$file' not found! 🐚"
+        echo -e "\e[31m[ ❌ ERROR ] Bash script '$file' not found!\e[0m"
     fi
 }
 
 makeignore() {
     if [[ -z "$1" ]]; then
-        echo "Bro, specify the technology! For example: makeignore python or makeignore node 🛠"
+        echo -e "\e[31m[ ❌ ERROR ] Specify technology! Example: makeignore python\e[0m"
         echo "Popular: python, node, go, c++, java, jetbrains"
         return 1
     fi
-    echo "Generating official .gitignore for '$1'... 📄✨"
+    echo -e "\e[34m[ 📄 GENERATING ] Fetching official .gitignore for '$1'...\e[0m"
     add-gitignore "$1"
     if [[ -f ".gitignore" ]]; then
-        echo "Done! File .gitignore for '$1' successfully created in the current directory. ✅"
+        echo -e "\e[32m[ 🎉 DONE ] .gitignore for '$1' successfully initialized!\e[0m"
     fi
 }
 
 deleteorphans() {
-    echo "Checking for unused dependencies in Fedora... 🔍"
+    echo -e "\e[34m[ 🔍 SCANNING ] Checking for unused dependencies in Fedora... 🔍\e[0m"
+    local orphans=$(LANG=C dnf list --autoremove 2>/dev/null | tail -n +2)
 
-    local orphans=$(dnf list --autoremove 2>/dev/null | tail -n +2)
-
-    if [[ -n "$orphans" && "$orphans" != *"Доступные пакеты"* && "$orphans" != *"Available Packages"* ]]; then
+    if [[ -n "$orphans" && "$orphans" != *"Available Packages"* ]]; then
         local count=$(echo "$orphans" | wc -l)
-        echo "Found orphans: $count pcs. Removing... 🧹"
+        echo -e "\e[33m[ 🧹 FOUND ] Detected $count unneeded dependencies. Cleaning up...\e[0m"
         echo "----------------------------------------"
         echo "$orphans"
         echo "----------------------------------------"
-
         sudo dnf autoremove
     else
-        echo "System is clean, no unused dependencies to remove! ✨"
+        echo -e "\e[32m[ ✨ CLEAN ] System is pure! No unused packages found.\e[0m"
     fi
 }
 
 venv() {
     if [[ -d ".venv" ]]; then
-        echo "Bro, .venv already exists here! Just type 'va' to activate it 🐍🔥"
+        echo -e "\e[33m[ 💡 INFO ] Virtual environment already exists. Run 'va' to activate it.\e[0m"
     else
-        echo "Creating Python virtual environment in '.venv'... 🛠🐍"
+        echo -e "\e[34m[ 🛠️ ENVIRONMENT ] Initializing Python venv in '.venv'...\e[0m"
         python -m venv .venv
 
         if [[ -f ".venv/bin/activate" ]]; then
-            echo "Activating new environment... 🚀"
+            echo -e "\e[34m[ 🚀 ACTIVATING ] Loading environment context...\e[0m"
             source .venv/bin/activate
-
-            echo "Upgrading pip inside virtual environment... 🧹"
+            echo -e "\e[34m[ 🧹 UPGRADING ] Maximizing pip version...\e[0m"
             pip install --upgrade pip &>/dev/null
-
-            echo "Done! Virtual environment successfully initialized and active. ✅"
+            echo -e "\e[32m[ 🎉 DONE ] Virtual environment is up, active and ready for Django!\e[0m"
         else
-            echo "Oops, something went wrong during .venv creation! 🛑"
+            echo -e "\e[31m[ ❌ ERROR ] Critical failure during venv deployment!\e[0m"
         fi
     fi
 }
@@ -239,7 +267,7 @@ va() {
     if [[ -f ".venv/bin/activate" ]]; then
         source .venv/bin/activate
     else
-        echo "Bro, there is no virtual environment here! Type 'venv' first 🐍"
+        echo -e "\e[31m[ ❌ ERROR ] Local active target '.venv' not found! Build it via 'venv' first.\e[0m"
     fi
 }
 
@@ -248,7 +276,7 @@ runpy() {
         if [[ -f "$1" ]]; then
             python "$1"
         else
-            echo "Bro, file '$1' not found in this directory! 🛑"
+            echo -e "\e[31m[ ❌ ERROR ] Direct file target '$1' not found!\e[0m"
         fi
     else
         if [[ -f "main.py" ]]; then
@@ -256,30 +284,39 @@ runpy() {
         elif [[ -f "app.py" ]]; then
             python app.py
         else
-            echo "Bro, specify a file (e.g., runpy test.py) or create main.py/app.py 🐍"
+            echo -e "\e[33m[ 💡 INFO ] Provide target file (e.g. runpy script.py) or create main.py/app.py\e[0m"
         fi
     fi
 }
 
 liveserver() {
-    echo "Starting local web server with live reload... 🚀🌐"
+    echo -e "\e[34m[ 🚀 SERVING ] Spawning local node web server with hot-reload...\e[0m"
     browser-sync start --server --files "**/*.html, **/*.css, **/*.js, **/*.vue"
 }
 
 staticserver() {
     local port="${1:-5000}"
-    echo "Starting quick static server on port $port... 🚀🌐"
+    echo -e "\e[34m[ 🚀 SERVING ] Spawning native Python static server on port $port...\e[0m"
     (sleep 1 && xdg-open "http://localhost:$port" &>/dev/null) &
     python -m http.server "$port"
 }
 
-alias postgresi="postgres-language-server init"
+alias update-all="echo '=== 1. Upgrading Fedora Repos ===' && sudo dnf upgrade --refresh && echo '=== 2. Upgrading Global NPM ===' && sudo npm update -g && echo '=== 3. Upgrading Rust Toolchain ===' && rustup update && echo '=== 4. Upgrading User Pip Packages ===' && pip list --outdated --format=columns | tail -n +3 | awk '{print \$1}' | xargs -n1 pip install --user --upgrade 2>/dev/null; echo '=== 5. Upgrading Flatpaks ===' && flatpak update && echo 'System synchronization completed successfully! 🚀🔥'"
+alias up-venv="pip list --outdated --format=columns | tail -n +3 | awk '{print \$1}' | xargs -n1 pip install --upgrade 2>/dev/null && echo 'All packages in .venv are up to date! 🐍🚀'"
 alias npmi="npm init -y"
-alias startdjango="python manage.py runserver"
-alias installdjango="pip install django"
-alias createmigrations="python manage.py makemigrations"
-alias applymigrations="python manage.py migrate"
-alias migrations="python manage.py makemigrations && python manage.py migrate"
+alias up-node="if [[ -f \"package.json\" ]]; then echo 'Upgrading all local npm packages... 📦🚀' && npm update && echo 'All local dependencies are up to date! ✅'; else echo 'Bro, package.json not found! Are you sure this is a Node.js project? 🛑'; fi"
+alias djrun="python manage.py runserver"
+alias djinst="pip install django"
+alias djmm="python manage.py makemigrations"
+alias djmig="python manage.py migrate"
+alias djm="python manage.py makemigrations && python manage.py migrate"
+alias djuser="python manage.py createsuperuser"
+alias djsh="python manage.py shell"
+alias postgresi="postgres-language-server init"
+alias dcup="docker compose up -d"
+alias dcdwn="docker compose down"
+alias dclog="docker compose logs -f"
+alias dcps="docker compose ps"
 alias dclean="docker system prune -a --volumes"
 alias myos="fastfetch"
 alias mygit="onefetch"
