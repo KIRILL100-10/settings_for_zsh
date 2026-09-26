@@ -172,6 +172,36 @@ splitaudio() {
     demucs -d cuda "$1"
 }
 
+
+createsub() {
+    if [[ -z "$1" ]]; then
+        echo -e "\e[31m[ ❌ ERROR ] Please specify an audio/video file! Example: createsub movie.wav\e[0m"
+        return 1
+    fi
+
+    if [[ ! -f "$1" ]]; then
+        echo -e "\e[31m[ ❌ ERROR ] Target file '$1' not found in this directory! 🛑\e[0m"
+        return 1
+    fi
+
+    local TARGET_FILE=$(realpath "$1")
+    local WHISPER_DIR="$HOME/Whisper AI"
+
+    echo -e "\e[34m[ 🚀 INITIALIZING ] Activating Whisper Turbo context on Python 3.14... \e[0m"
+
+    export LD_LIBRARY_PATH="$WHISPER_DIR/.venv/lib64/python3.14/site-packages/nvidia/cublas/lib:$WHISPER_DIR/.venv/lib64/python3.14/site-packages/nvidia/cudnn/lib:$LD_LIBRARY_PATH"
+
+    pushd "$WHISPER_DIR" &>/dev/null
+    source .venv/bin/activate
+
+    python transcribe.py "$TARGET_FILE"
+
+    deactivate
+    popd &>/dev/null
+
+    echo -e "\e[32m[ ✅ SUCCESS ] Terminal context restored to host Fedora.\e[0m"
+}
+
 checkmedia() {
     if [[ -n "$1" ]]; then
         if [[ -f "$1" ]]; then
