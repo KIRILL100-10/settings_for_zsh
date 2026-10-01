@@ -1,126 +1,20 @@
-# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
-# Initialization code that may require console input (password prompts, [y/n]
-# confirmations, etc.) must go above this block; everything else may go below.
 if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
-# If you come from bash you might have to change your $PATH.
-# export PATH=$HOME/bin:$HOME/.local/bin:/usr/local/bin:$PATH
+export PATH=$HOME/bin:$HOME/.local/bin:/usr/local/bin:$PATH
 
-# Path to your Oh My Zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
 
-# Set name of the theme to load --- if set to "random", it will
-# load a random theme each time Oh My Zsh is loaded, in which case,
-# to know which specific one was loaded, run: echo $RANDOM_THEME
-# See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
+export LIBVA_DRIVER_NAME=nvidia
+
 ZSH_THEME="powerlevel10k/powerlevel10k"
 
-# Set list of themes to pick from when loading at random
-# Setting this variable when ZSH_THEME=random will cause zsh to load
-# a theme from this variable instead of looking in $ZSH/themes/
-# If set to an empty array, this variable will have no effect.
-# ZSH_THEME_RANDOM_CANDIDATES=( "robbyrussell" "agnoster" )
-
-# Uncomment the following line to use case-sensitive completion.
-# CASE_SENSITIVE="true"
-
-# Uncomment the following line to use hyphen-insensitive completion.
-# Case-sensitive completion must be off. _ and - will be interchangeable.
-# HYPHEN_INSENSITIVE="true"
-
-# Uncomment one of the following lines to change the auto-update behavior
-# zstyle ':omz:update' mode disabled  # disable automatic updates
-# zstyle ':omz:update' mode auto      # update automatically without asking
-# zstyle ':omz:update' mode reminder  # just remind me to update when it's time
-
-# Uncomment the following line to change the frequency the auto-updater is run (in days).
-# zstyle ':omz:update' frequency 13
-
-# Uncomment the following line to set how old an update must be before it's applied, manually or via the auto-updater (in days).
-# zstyle ':omz:update' cooldown 10
-
-# Uncomment the following line if pasting URLs and other text is messed up.
-# DISABLE_MAGIC_FUNCTIONS="true"
-
-# Uncomment the following line to disable colors in ls.
-# DISABLE_LS_COLORS="true"
-
-# Uncomment the following line to disable auto-setting terminal title.
-# DISABLE_AUTO_TITLE="true"
-
-# Uncomment the following line to enable command auto-correction.
-# ENABLE_CORRECTION="true"
-
-# Uncomment the following line to display red dots whilst waiting for completion.
-# You can also set it to another string to have that shown instead of the default red dots.
-# e.g. COMPLETION_WAITING_DOTS="%F{yellow}waiting...%f"
-# Caution: this setting can cause issues with multiline prompts in zsh < 5.7.1 (see #5765)
-# COMPLETION_WAITING_DOTS="true"
-
-# Uncomment the following line if you want to disable marking untracked files
-# under VCS as dirty. This makes repository status check for large repositories
-# much, much faster.
-# DISABLE_UNTRACKED_FILES_DIRTY="true"
-
-# Uncomment the following line if you want to change the command execution time
-# stamp shown in the history command output.
-# You can set one of the optional three formats:
-# "mm/dd/yyyy"|"dd.mm.yyyy"|"yyyy-mm-dd"
-# or set a custom format using the strftime function format specifications,
-# see 'man strftime' for details.
-# HIST_STAMPS="mm/dd/yyyy"
-
-# Would you like to use another custom folder than $ZSH/custom?
-# ZSH_CUSTOM=/path/to/new-custom-folder
-
-# Which plugins would you like to load?
-# Standard plugins can be found in $ZSH/plugins/
-# Custom plugins may be added to $ZSH_CUSTOM/plugins/
-# Example format: plugins=(rails git textmate ruby lighthouse)
-# Add wisely, as too many plugins slow down shell startup.
 plugins=(git zsh-syntax-highlighting zsh-autosuggestions)
 
 source $ZSH/oh-my-zsh.sh
 
-# User configuration
-
-# export MANPATH="/usr/local/man:$MANPATH"
-
-# You may need to manually set your language environment
-# export LANG=en_US.UTF-8
-
-# Preferred editor for local and remote sessions
-# if [[ -n $SSH_CONNECTION ]]; then
-#   export EDITOR='vim'
-# else
-#   export EDITOR='nvim'
-# fi
-
-# Compilation flags
-# export ARCHFLAGS="-arch $(uname -m)"
-
-# Set personal aliases, overriding those provided by Oh My Zsh libs,
-# plugins, and themes. Aliases can be placed here, though Oh My Zsh
-# users are encouraged to define aliases within a top-level file in
-# the $ZSH_CUSTOM folder, with .zsh extension. Examples:
-# - $ZSH_CUSTOM/aliases.zsh
-# - $ZSH_CUSTOM/macos.zsh
-# For a full list of active aliases, run `alias`.
-#
-# Example aliases
-# alias zshconfig="mate ~/.zshrc"
-# alias ohmyzsh="mate ~/.oh-my-zsh"
-
-# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
-
-
-export KUBECONFIG=~/.kube/config
-export PATH="$HOME/.local/bin:$PATH"
-export LIBVA_DRIVER_NAME=nvidia
-source <(kubectl completion zsh)
 
 tomov() {
     if [ -z "$1" ]; then
@@ -171,7 +65,6 @@ splitaudio() {
     echo -e "\e[34m[ 🧠 AI PROCESS ] Running Demucs neural network on CUDA (NVIDIA GPU)...🏼\e[0m"
     demucs -d cuda "$1"
 }
-
 
 createsub() {
     if [[ -z "$1" ]]; then
@@ -245,19 +138,6 @@ checkshell() {
     fi
 }
 
-makeignore() {
-    if [[ -z "$1" ]]; then
-        echo -e "\e[31m[ ❌ ERROR ] Specify technology! Example: makeignore python\e[0m"
-        echo "Popular: python, node, go, c++, java, jetbrains"
-        return 1
-    fi
-    echo -e "\e[34m[ 📄 GENERATING ] Fetching official .gitignore for '$1'...\e[0m"
-    add-gitignore "$1"
-    if [[ -f ".gitignore" ]]; then
-        echo -e "\e[32m[ 🎉 DONE ] .gitignore for '$1' successfully initialized!\e[0m"
-    fi
-}
-
 deleteorphans() {
     echo -e "\e[34m[ 🔍 SCANNING ] Checking for unused dependencies in Fedora... 🔍\e[0m"
     local orphans=$(LANG=C dnf list --autoremove 2>/dev/null | tail -n +2)
@@ -319,22 +199,45 @@ runpy() {
     fi
 }
 
-liveserver() {
-    echo -e "\e[34m[ 🚀 SERVING ] Spawning local node web server with hot-reload...\e[0m"
-    browser-sync start --server --files "**/*.html, **/*.css, **/*.js, **/*.vue"
+runjava() {
+    if [[ -z "$1" ]]; then
+        echo -e "\e[31m[ ❌ ERROR ] Please specify a Java file, bro! Example: runjava Main.java\e[0m"
+        return 1
+    fi
+
+    if [[ ! -f "$1" ]]; then
+        echo -e "\e[31m[ ❌ ERROR ] Target file '$1' not found in this directory! 🛑\e[0m"
+        return 1
+    fi
+
+    local FILE_NAME="$1"
+    local CLASS_NAME="${FILE_NAME%.java}"
+
+    echo -e "\e[34m[ ⚙️ COMPILING ] Compiling $FILE_NAME via OpenJDK core...\e[0m"
+
+    if javac "$FILE_NAME"; then
+        echo -e "\e[32m[ 🎉 SUCCESS ] Compilation completed! Launching JVM environment...\e[0m"
+        echo -e "\e[33m──────────────────────────────────────────────────\e[0m"
+
+        java "$CLASS_NAME"
+
+        echo -e "\e[33m──────────────────────────────────────────────────\e[0m"
+        echo -e "\e[34m[ 🧼 CLEANING ] Purging temporary bytecode cache...\e[0m"
+
+        rm -f "${CLASS_NAME}.class"
+        echo -e "\e[32m[ ✅ DONE ] System is clean, host context restored! 😎🏆\e[0m"
+    else
+        echo -e "\e[31m[ ❌ BUILD FAILED ] Target build crashed! Check your syntax inside Zed.\e[0m"
+        return 1
+    fi
 }
 
-staticserver() {
-    local port="${1:-5000}"
-    echo -e "\e[34m[ 🚀 SERVING ] Spawning native Python static server on port $port...\e[0m"
-    (sleep 1 && xdg-open "http://localhost:$port" &>/dev/null) &
-    python -m http.server "$port"
-}
-
-alias update-all="echo '=== 1. Upgrading Fedora Repos ===' && sudo dnf upgrade --refresh && echo '=== 2. Upgrading Global NPM ===' && sudo npm update -g && echo '=== 3. Upgrading Rust Toolchain ===' && rustup update && echo '=== 4. Upgrading User Pip Packages ===' && pip list --outdated --format=columns | tail -n +3 | awk '{print \$1}' | xargs -n1 pip install --user --upgrade 2>/dev/null; echo '=== 5. Upgrading Flatpaks ===' && flatpak update && echo 'System synchronization completed successfully! 🚀🔥'"
+alias update-all="echo '=== 1. Upgrading Fedora Repos ===' && sudo dnf upgrade --refresh && echo '=== 2. Upgrading User Pip Packages ===' && pip list --outdated --format=columns | tail -n +3 | awk '{print \$1}' | xargs -n1 pip install --user --upgrade 2>/dev/null; echo '=== 3. Upgrading Flatpaks ===' && flatpak update && echo 'System synchronization completed successfully! 🚀🔥'"
 alias up-venv="pip list --outdated --format=columns | tail -n +3 | awk '{print \$1}' | xargs -n1 pip install --upgrade 2>/dev/null && echo 'All packages in .venv are up to date! 🐍🚀'"
 alias npmi="npm init -y"
 alias up-node="if [[ -f \"package.json\" ]]; then echo 'Upgrading all local npm packages... 📦🚀' && npm update && echo 'All local dependencies are up to date! ✅'; else echo 'Bro, package.json not found! Are you sure this is a Node.js project? 🛑'; fi"
+alias webstart="sudo systemctl start httpd php-fpm && echo -e '\e[32m[ 🚀 ONLINE ] Apache and PHP-FPM processes launched successfully! Check http://localhost:8080\e[0m'"
+alias webstop="sudo systemctl stop httpd php-fpm && echo -e '\e[31m[ 🛑 OFFLINE ] Web-server infrastructure gracefully shut down. Context cleared.\e[0m'"
 alias djrun="python manage.py runserver"
 alias djinst="pip install django"
 alias djmm="python manage.py makemigrations"
@@ -342,7 +245,6 @@ alias djmig="python manage.py migrate"
 alias djm="python manage.py makemigrations && python manage.py migrate"
 alias djuser="python manage.py createsuperuser"
 alias djsh="python manage.py shell"
-alias postgresi="postgres-language-server init"
 alias dcup="docker compose up -d"
 alias dcdwn="docker compose down"
 alias dclog="docker compose logs -f"
@@ -350,10 +252,4 @@ alias dcps="docker compose ps"
 alias dclean="docker system prune -a --volumes"
 alias myos="fastfetch"
 alias mygit="onefetch"
-alias k8s-start="sudo systemctl start k3s && mkdir -p ~/.kube && sudo cp /etc/rancher/k3s/k3s.yaml ~/.kube/config && sudo chown \$(id -u):\$(id -g) ~/.kube/config && chmod 600 ~/.kube/config && echo 'Cloud infrastructure initialized! Node Ready 🚀🐳'"
-alias k8s-stop="sudo systemctl stop k3s && echo 'Cloud infrastructure stopped. RAM released! 🧹✨'"
-alias k8s-status="sudo systemctl status k3s"
-alias k="kubectl"
-alias kgp="kubectl get pods"
-alias kgs="kubectl get services"
 alias updatezsh="p10k configure"

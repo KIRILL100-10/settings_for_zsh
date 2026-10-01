@@ -17,14 +17,9 @@ An optimized, feature-rich, and automation-heavy `.zshrc` configuration designed
 * **`va`** – Fast-activates your local Python virtual environment (`.venv`).
 * **`checkdocker [file]`** – Lints your Dockerfile using `hadolint` to catch bad practices.
 
-### 🛡️ Git, C++ sh
+### 🛡️ C++ sh
 * **`checkcpp [path]`** – Runs deep, conclusive static analysis for C/C++ projects using `cppcheck`.
-* **`makeignore <tech>`** – Instantly generates official boilerplate `.gitignore` files via `add-gitignore`.
 * **`checkshell [path]`** – Runs  analysis for shell scripts using `shellcheck`.
-
-### 🌐 Web Servers & Development
-* **`liveserver`** – Spins up a hot-reloading dev server for Frontend (`html`, `css`, `js`, `vue`) via `browser-sync`.
-* **`staticserver [port]`** – Launches a quick Python HTTP server (default port `5000`) and automatically opens it in your browser.
 
 ## ⚡ Supercharged Aliases
 
@@ -32,9 +27,6 @@ An optimized, feature-rich, and automation-heavy `.zshrc` configuration designed
 * `dclean` – Nukes unused Docker cache, volumes, container images, and networks.
 * `myos` – Displays clean system hardware specs using `fastfetch`.
 * `mygit` – Displays project specs using `onefetch`.
-* `k8s-start` – Initializes your lightweight Kubernetes (`k3s`) cluster on demand and verifies node status.
-* `k8s-stop` – Stops the Kubernetes cluster completely and releases system RAM from background daemons.
-* `k8s-status` – Checks the active `systemd` runtime logs and process state of the `k3s` server.
 * `updatezsh` - Updates the Powerlevel10k configuration.
 * `update-all` - Updates all packages.
 
