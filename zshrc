@@ -2,27 +2,20 @@ if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
-export PATH=$HOME/bin:$HOME/.local/bin:/usr/local/bin:/usr/sbin:/sbin:/usr/local/sbin:$PATH
-
+export PATH="$HOME/bin:$HOME/.local/bin:/usr/local/bin:/usr/sbin:/sbin:/usr/local/sbin:$PATH"
 export ZSH="$HOME/.oh-my-zsh"
 
 export LIBVA_DRIVER_NAME=nvidia
 
-export JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64
-export PATH=$JAVA_HOME/bin:$PATH
-
-export SDKMAN_DIR="$HOME/.sdkman"
-[[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
-
-eval "$(zoxide init zsh)"
+export JAVA_HOME=/usr/lib64/jvm/java-21-openjdk-21
+export PATH="$JAVA_HOME/bin:/opt/gradle/gradle-9.9.0/bin:$PATH"
 
 ZSH_THEME="powerlevel10k/powerlevel10k"
-
 plugins=(git zsh-syntax-highlighting zsh-autosuggestions)
 
-source $ZSH/oh-my-zsh.sh
-
+source "$ZSH/oh-my-zsh.sh"
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+
 
 tomov() {
     if [ -z "$1" ]; then
@@ -73,25 +66,20 @@ splitaudio() {
         printf "\033[31m[ ❌ ERROR ] Specify an audio file!\033[0m\n"
         return 1
     fi
-
     if [[ ! -f "$1" ]]; then
         printf "\033[31m[ ❌ ERROR ] Target file '$1' not found in this directory! 🛑\033[0m\n"
         return 1
     fi
 
     local TARGET_FILE=$(realpath "$1")
-
     local CURRENT_DIR="$PWD"
+    local DEMUCS_DIR="$HOME/Demucs_AI"
 
-    local DEMUCS_DIR="$HOME/Demucs AI"
-
-    printf "\033[34m[ 🧠 AI PROCESS ] Running Demucs neural network on CUDA (NVIDIA GPU)...🏼\033[0m\n"
+    printf "\033[34m[ 🧠 AI PROCESS ] Running Demucs neural network on CUDA (NVIDIA GPU)...\033[0m\n"
 
     pushd "$DEMUCS_DIR" &>/dev/null
     source .venv/bin/activate
-
     demucs -d cuda -o "$CURRENT_DIR" "$TARGET_FILE"
-
     deactivate
     popd &>/dev/null
 }
@@ -101,28 +89,30 @@ createsub() {
         printf "\033[31m[ ❌ ERROR ] Please specify an audio/video file! Example: createsub movie.wav\033[0m\n"
         return 1
     fi
-
     if [[ ! -f "$1" ]]; then
         printf "\033[31m[ ❌ ERROR ] Target file '$1' not found in this directory! 🛑\033[0m\n"
         return 1
     fi
 
     local TARGET_FILE=$(realpath "$1")
-    local WHISPER_DIR="$HOME/Whisper AI"
+    local WHISPER_DIR="$HOME/Whisper_AI"
+    local OLD_LD_PATH="$LD_LIBRARY_PATH"
 
-    printf "\033[34m[ 🚀 INITIALIZING ] Activating Whisper Turbo context on Python 3.13... \033[0m\n"
-
-    export LD_LIBRARY_PATH="$WHISPER_DIR/.venv/lib/python3.13/site-packages/nvidia/cublas/lib:$WHISPER_DIR/.venv/lib/python3.13/site-packages/nvidia/cudnn/lib:$LD_LIBRARY_PATH"
+    printf "\033[34m[ 🚀 INITIALIZING ] Activating Faster Whisper Turbo context...\033[0m\n"
 
     pushd "$WHISPER_DIR" &>/dev/null
     source .venv/bin/activate
 
+    local SITE_PACKAGES=$(python3 -c "import site; print(site.getsitepackages()[0])")
+    export LD_LIBRARY_PATH="$SITE_PACKAGES/nvidia/cublas/lib:$SITE_PACKAGES/nvidia/cudnn/lib:$LD_LIBRARY_PATH"
+
     python3 transcribe.py "$TARGET_FILE"
 
     deactivate
+    export LD_LIBRARY_PATH="$OLD_LD_PATH"
     popd &>/dev/null
 
-    printf "\033[32m[ ✅ SUCCESS ] Terminal context restored to host Debian.\033[0m\n"
+    printf "\033[32m[ ✅ SUCCESS ] Terminal context restored to host openSUSE Leap.\033[0m\n"
 }
 
 checkmedia() {
@@ -139,6 +129,10 @@ checkmedia() {
 }
 
 checkdocker() {
+    if ! command -v hadolint &>/dev/null; then
+        printf "\033[33m[ ⚠️ MISSING ] 'hadolint' is not installed on openSUSE!\033[0m\n"
+        return 1
+    fi
     local file="${1:-Dockerfile}"
     if [[ -f "$file" ]]; then
         printf "\033[34m[ 🔍 LINTING ] Running Hadolint on '$file'...\033[0m\n"
@@ -149,6 +143,10 @@ checkdocker() {
 }
 
 checkcpp() {
+    if ! command -v cppcheck &>/dev/null; then
+        printf "\033[33m[ ⚠️ MISSING ] 'cppcheck' not installed. Run: sudo zypper in cppcheck\033[0m\n"
+        return 1
+    fi
     local target="${1:-.}"
     if [[ -e "$target" ]]; then
         printf "\033[34m[ 🔍 ANALYSIS ] Running deep C/C++ analysis on '$target'... 🛠⚙️\033[0m\n"
@@ -159,6 +157,10 @@ checkcpp() {
 }
 
 checkshell() {
+    if ! command -v shellcheck &>/dev/null; then
+        printf "\033[33m[ ⚠️ MISSING ] 'shellcheck' not installed. Run: sudo zypper in ShellCheck\033[0m\n"
+        return 1
+    fi
     local file="${1:-script.sh}"
     if [[ -f "$file" ]]; then
         printf "\033[34m[ 🔍 LINTING ] Running ShellCheck on '$file'...\033[0m\n"
@@ -215,7 +217,6 @@ runpy() {
 
 runjava() {
     local file="$1"
-
     if [[ -z "$file" ]]; then
         if [[ -f "Main.java" ]]; then
             file="Main.java"
@@ -260,11 +261,13 @@ runjavafx() {
     if [[ -f "pom.xml" ]]; then
         printf "\033[34m[ ⚙️ MAVEN ] Launching Apache Maven JavaFX plugin... 🚀\033[0m\n"
         printf "\033[33m──────────────────────────────────────────────────\033[0m\n"
-        ./mvnw javafx:run 2>/dev/null || mvn javafx:run
+        [[ -f "./mvnw" && ! -x "./mvnw" ]] && chmod +x ./mvnw
+        [[ -x "./mvnw" ]] && ./mvnw javafx:run || mvn javafx:run
     elif [[ -f "build.gradle" || -f "build.gradle.kts" ]]; then
         printf "\033[34m[ ⚙️ GRADLE ] Launching Gradle JavaFX task... 🚀\033[0m\n"
         printf "\033[33m──────────────────────────────────────────────────\033[0m\n"
-        ./gradlew javafxRun 2>/dev/null || gradle javafxRun
+        [[ -f "./gradlew" && ! -x "./gradlew" ]] && chmod +x ./gradlew
+        [[ -x "./gradlew" ]] && ./gradlew javafxRun || gradle javafxRun
     else
         printf "\033[31m[ ❌ ERROR ] Build blueprint (pom.xml / build.gradle) missing! Is this a Maven/Gradle JavaFX project? 🛑\033[0m\n"
         return 1
@@ -279,11 +282,13 @@ runspring() {
     if [[ -f "pom.xml" ]]; then
         printf "\033[34m[ ⚙️ MAVEN ] Launching Apache Maven bootstrapper... 🍃\033[0m\n"
         printf "\033[33m──────────────────────────────────────────────────\033[0m\n"
-        ./mvnw spring-boot:run 2>/dev/null || mvn spring-boot:run
+        [[ -f "./mvnw" && ! -x "./mvnw" ]] && chmod +x ./mvnw
+        [[ -x "./mvnw" ]] && ./mvnw spring-boot:run || mvn spring-boot:run
     elif [[ -f "build.gradle" || -f "build.gradle.kts" ]]; then
-        printf "\033[34m[ ⚙️ GRADLE ] Launching modern Gradle wrapper context (sdkman)... 🍃\033[0m\n"
+        printf "\033[34m[ ⚙️ GRADLE ] Launching modern Gradle wrapper context... 🍃\033[0m\n"
         printf "\033[33m──────────────────────────────────────────────────\033[0m\n"
-        ./gradlew bootRun 2>/dev/null || gradle bootRun
+        [[ -f "./gradlew" && ! -x "./gradlew" ]] && chmod +x ./gradlew
+        [[ -x "./gradlew" ]] && ./gradlew bootRun || gradle bootRun
     else
         printf "\033[31m[ ❌ ERROR ] Critical Failure: Build context not found! Is this a Spring project, bro? 🛑\033[0m\n"
         return 1
@@ -293,8 +298,12 @@ runspring() {
 }
 
 runc() {
-    local file="$1"
+    if ! command -v gcc &>/dev/null; then
+        printf "\033[33m[ ⚠️ MISSING ] 'gcc' not installed. Run: sudo zypper in gcc\033[0m\n"
+        return 1
+    fi
 
+    local file="$1"
     if [[ -z "$file" ]]; then
         if [[ -f "main.c" ]]; then
             file="main.c"
@@ -313,7 +322,7 @@ runc() {
     local BIN_NAME="${FILE_NAME%.c}"
 
     printf "\033[34m[ ⚙️ COMPILING ] Compiling %s via GCC native engine...\033[0m\n" "$FILE_NAME"
-    if gcc -O2 -Wall "$FILE_NAME" -o "$BIN_NAME"; then
+    if gcc -O2 -Wall "$FILE_NAME" -o "$BIN_NAME" -lm; then
         printf "\033[32m[ 🎉 SUCCESS ] Binary compiled! Launching executable host context...\033[0m\n"
         printf "\033[33m──────────────────────────────────────────────────\033[0m\n"
         ./"$BIN_NAME"
@@ -327,8 +336,12 @@ runc() {
 }
 
 runcpp() {
-    local file="$1"
+    if ! command -v g++ &>/dev/null; then
+        printf "\033[33m[ ⚠️ MISSING ] 'g++' not installed. Run: sudo zypper in gcc-c++\033[0m\n"
+        return 1
+    fi
 
+    local file="$1"
     if [[ -z "$file" ]]; then
         if [[ -f "main.cpp" ]]; then
             file="main.cpp"
@@ -374,55 +387,24 @@ runcs() {
         printf "\033[33m──────────────────────────────────────────────────\033[0m\n"
         printf "\033[32m[ ✅ DONE ] C# execution environment stopped.\033[0m\n"
     else
-        local current_dir="${PWD##*/}"
-        printf "\033[33m[ 💡 INFO ] No C# project found. Initializing new Console Application '%s'...\033[0m\n" "$current_dir"
+        local target_name="${1:-${PWD##*/}}"
+        printf "\033[33m[ 💡 INFO ] No C# project found. Initializing new Console Application '%s'...\033[0m\n" "$target_name"
 
-        if dotnet new console -o "$current_dir"; then
+        if dotnet new console -o "$target_name"; then
             printf "\033[32m[ 🎉 SUCCESS ] C# workspace deployed! Moving context into directory...\033[0m\n"
 
-            cd "$current_dir" || return 1
+            cd "$target_name" || return 1
 
             printf "\033[34m[ 📝 VS CODE ] Opening VS Code for your new lab... 🚀\033[0m\n"
-            code .
+            if command -v code &>/dev/null; then
+                code .
+            else
+                flatpak run com.visualstudio.code . &>/dev/null &
+            fi
         else
             printf "\033[31m[ ❌ ERROR ] Critical failure during .NET project bootstrap!\033[0m\n"
             return 1
         fi
-    fi
-}
-
-rungo() {
-    if [[ -n "$1" ]]; then
-        if [[ -f "$1" ]]; then
-            printf "\033[34m[ 🐹 GO ] Launching single target source file '$1'...\033[0m\n"
-            go run "$1"
-        else
-            printf "\033[31m[ ❌ ERROR ] Target file '$1' missing! 🛑\033[0m\n"
-            return 1
-        fi
-    else
-        if [[ -f "main.go" ]]; then
-            printf "\033[34m[ 🐹 GO ] Launching default entrypoint 'main.go'...\033[0m\n"
-            go run main.go
-        else
-            printf "\033[31m[ ❌ ERROR ] No go project context found! Provide a file or create main.go\033[0m\n"
-            return 1
-        fi
-    fi
-}
-
-runrust() {
-    if [[ -f "Cargo.toml" ]]; then
-        printf "\033[34m[ 🦀 RUST ] Cargo pipeline detected. Compiling workspace target...\033[0m\n"
-        printf "\033[33m──────────────────────────────────────────────────\033[0m\n"
-        cargo run
-        printf "\033[33m──────────────────────────────────────────────────\033[0m\n"
-    elif [[ -f "$1" ]]; then
-        printf "\033[34m[ 🦀 RUST ] Isolated script compilation via rustc for '$1'...\033[0m\n"
-        rustc "$1" && ./"${1%.rs}" && rm -f "${1%.rs}"
-    else
-        printf "\033[31m[ ❌ ERROR ] No Cargo.toml found and no isolated .rs script target specified! 🛑\033[0m\n"
-        return 1
     fi
 }
 
@@ -493,8 +475,12 @@ runnode() {
 }
 
 runlua() {
-    local file="$1"
+    if ! command -v lua &>/dev/null; then
+        printf "\033[33m[ ⚠️ MISSING ] 'lua' not installed. Run: sudo zypper in lua54\033[0m\n"
+        return 1
+    fi
 
+    local file="$1"
     if [[ -z "$file" ]]; then
         if [[ -f "main.lua" ]]; then
             file="main.lua"
@@ -517,8 +503,12 @@ runlua() {
 }
 
 runsql() {
-    local file="$1"
+    if ! command -v psql &>/dev/null; then
+        printf "\033[33m[ ⚠️ MISSING ] 'psql' client not installed. Run: sudo zypper in postgresql\033[0m\n"
+        return 1
+    fi
 
+    local file="$1"
     if [[ -z "$file" ]]; then
         if [[ -f "schema.sql" ]]; then
             file="schema.sql"
@@ -541,7 +531,7 @@ runsql() {
     printf "\033[34m[ 🐘 POSTGRESQL ] Injecting SQL script '%s' into database '%s'... 📊\033[0m\n" "$SQL_FILE" "$DB_NAME"
     printf "\033[33m──────────────────────────────────────────────────\033[0m\n"
 
-    psql -d "$DB_NAME" -f "$SQL_FILE"
+    psql -v ON_ERROR_STOP=1 -d "$DB_NAME" -f "$SQL_FILE"
 
     local EXIT_CODE=$?
     printf "\033[33m──────────────────────────────────────────────────\033[0m\n"
@@ -556,7 +546,6 @@ runsql() {
 
 runsh() {
     local file="$1"
-
     if [[ -z "$file" ]]; then
         if [[ -f "script.sh" ]]; then
             file="script.sh"
@@ -586,18 +575,12 @@ runsh() {
     fi
 }
 
-workwithjson() {
-    local file="${1:-data.json}"
-    if [[ -f "$file" ]]; then
-        printf "\033[34m[ 📊 VIEWING ] Opening JSON explorer for '$file'...\033[0m\n"
-        fx "$file"
-    else
-        printf "\033[31m[ ❌ ERROR ] JSON file '$file' not found!\033[0m\n"
+workwithmd() {
+    if ! command -v glow &>/dev/null; then
+        printf "\033[33m[ ⚠️ MISSING ] 'glow' not installed. Run: sudo zypper in glow\033[0m\n"
         return 1
     fi
-}
 
-workwithmd() {
     local file="${1:-README.md}"
     if [[ -f "$file" ]]; then
         printf "\033[34m[ 📖 READING ] Rendering Markdown file '$file'...\033[0m\n"
@@ -608,47 +591,33 @@ workwithmd() {
     fi
 }
 
-workwithlogs() {
-    local file="$1"
-
-    if [[ -z "$file" ]]; then
-        if [[ -f "logs/backend.log" ]]; then
-            file="logs/backend.log"
-        else
-            file=$(ls *.log 2>/dev/null | head -n 1)
-        fi
-    fi
-
-    if [[ -n "$file" && -f "$file" ]]; then
-        printf "\033[34m[ 📋 LOGS ] Opening interactive log viewer (toolong) for '$file'...\033[0m\n"
-        tl "$file"
-    else
-        printf "\033[31m[ ❌ ERROR ] Target log file not found! Provide a path or create a .log file.\033[0m\n"
-        return 1
-    fi
-}
-
 update-all() {
-    printf "\033[34m=== 1. Upgrading Debian Repos & Core System ===\033[0m\n"
-    sudo apt update && sudo apt dist-upgrade -y
+    printf "\033[34m=== 1. Upgrading openSUSE Leap Repos & Core System ===\033[0m\n"
+    sudo zypper ref && sudo zypper up -y
 
-    printf "\033[34m=== 2. Upgrading User Pip & Pipx Packages ===\033[0m\n"
-
-    pip list --outdated --format=columns 2>/dev/null | tail -n +3 | awk '{print $1}' | xargs -r -n1 pip install --user --upgrade --break-system-packages 2>/dev/null
+    printf "\033[34m=== 2. Upgrading Isolated Pipx Applications ===\033[0m\n"
     if command -v pipx &>/dev/null; then
         pipx upgrade-all
+    else
+        printf "\033[33m[ 💡 INFO ] 'pipx' not installed, skipping Python CLI tools.\033[0m\n"
     fi
 
     printf "\033[34m=== 3. Upgrading Isolated Flatpak Applications ===\033[0m\n"
-    flatpak update -y
+    if command -v flatpak &>/dev/null; then
+        flatpak update -y
+    fi
 
-    printf "\033[32mSystem synchronization completed successfully! 🚀🔥\033[0m\n"
+    printf "\033[32mopenSUSE system synchronization completed successfully! 🚀🔥\033[0m\n"
 }
 
 up-venv() {
-    if [[ -n "$VIRTUAL_ENV" || -d ".venv" ]]; then
-        printf "\033[34m[ ⚙️ PYTHON ] Upgrading outdated packages inside virtual environment...\033[0m\n"
+    if [[ -n "$VIRTUAL_ENV" ]]; then
+        printf "\033[34m[ ⚙️ PYTHON ] Upgrading outdated packages inside active virtual environment...\033[0m\n"
         pip list --outdated --format=columns 2>/dev/null | tail -n +3 | awk '{print $1}' | xargs -r -n1 pip install --upgrade 2>/dev/null
+        printf "\033[32m[ ✅ DONE ] All packages in active venv are up to date! 🐍🚀\033[0m\n"
+    elif [[ -d ".venv" ]]; then
+        printf "\033[34m[ ⚙️ PYTHON ] Upgrading outdated packages inside local '.venv'...\033[0m\n"
+        .venv/bin/pip list --outdated --format=columns 2>/dev/null | tail -n +3 | awk '{print $1}' | xargs -r -n1 .venv/bin/pip install --upgrade 2>/dev/null
         printf "\033[32m[ ✅ DONE ] All packages in .venv are up to date! 🐍🚀\033[0m\n"
     else
         printf "\033[31m[ ❌ ERROR ] Python virtual environment target not active or '.venv' directory missing!\033[0m\n"
@@ -671,15 +640,15 @@ up-node() {
 apache() {
     case "$1" in
         start)
-            sudo systemctl start apache2 php8.4-fpm && \
-            printf "\033[32m[ 🚀 ONLINE ] Apache2 and PHP 8.4 FPM processes launched successfully! Check http://localhost\033[0m\n"
+            sudo systemctl start apache2 php-fpm && \
+            printf "\033[32m[ 🚀 ONLINE ] Apache2 and PHP-FPM processes launched successfully! Check http://localhost\033[0m\n"
             ;;
         stop)
-            sudo systemctl stop apache2 php8.4-fpm && \
+            sudo systemctl stop apache2 php-fpm && \
             printf "\033[31m[ 🛑 OFFLINE ] Web-server infrastructure gracefully shut down. Context cleared.\033[0m\n"
             ;;
         status|restart)
-            sudo systemctl "$1" apache2 php8.4-fpm
+            sudo systemctl "$1" apache2 php-fpm
             ;;
         *)
             printf "\033[33m[ 💡 INFO ] Usage: apache [start|stop|status|restart]\033[0m\n"
@@ -708,79 +677,15 @@ dclean() {
     fi
 }
 
-checkdisk() {
-    duf "${1:-/}" "${@:2}"
-}
-
-checkfolders() {
-    dust "${1:-.}" "${@:2}"
-}
-
-checkallfiles() {
-    ncdu "${1:-.}" "${@:2}"
-}
-
-showfiles() {
-    eza --icons --group-directories-first "${@:-.}"
-}
-
-viewcode() {
-    if [[ -n "$1" ]]; then
-        bat "$@"
-    else
-        printf "\033[33m[ 💡 INFO ] Specify a file target to view! Example: viewcode main.py\033[0m\n"
-    fi
-}
-
-findtext() {
-    if [[ -n "$1" ]]; then
-        rg "$@"
-    else
-        printf "\033[33m[ 💡 INFO ] Provide a regex pattern search query! Example: findtext 'def venv'\033[0m\n"
-    fi
-}
-
-findfile() {
-    if [[ -n "$1" ]]; then
-        fd "$@"
-    else
-        printf "\033[33m[ 💡 INFO ] Provide a name target for fd search! Example: findfile index.html\033[0m\n"
-    fi
-}
-
-replacetext() {
-    if [[ -z "$1" || -z "$2" ]]; then
-        printf "\033[31m[ ❌ ERROR ] Usage: replacetext 'old_string' 'new_string' [file]\033[0m\n"
-        return 1
-    fi
-    sd "$@"
-}
-
-viewchanges() {
-    delta "$@"
-}
-
-quickhelp() {
-    if [[ -n "$1" ]]; then
-        tldr "$@"
-    else
-        printf "\033[33m[ 💡 INFO ] Specify a command name for TLDR manual! Example: quickhelp tar\033[0m\n"
-    fi
-}
-
 
 alias cleanpip="pip cache purge"
 alias myosinfo="fastfetch"
 alias gitprinfo="onefetch"
-alias offlaptop="shutdown -h now"
-alias rebootlaptop="sudo reboot"
-alias checkprocesses="NeoHtop"
-alias checkvideocard="nvtop"
-alias checknet="nload"
-alias checkping="gping"
+alias offlaptop="systemctl poweroff"
+alias rebootlaptop="systemctl reboot"
 alias checksession='echo $XDG_SESSION_TYPE'
+alias checkdiskspace="duf"
 alias changeconfzsh="p10k configure"
-alias listenmusic="cmus"
 alias workwithgit="lazygit"
 alias workwithdocker="lazydocker"
 alias workwithapi="posting"
