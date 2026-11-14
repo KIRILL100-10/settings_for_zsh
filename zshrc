@@ -18,22 +18,27 @@ source "$ZSH/oh-my-zsh.sh"
 
 
 yt() {
+    if ! command -v yt-dlp &>/dev/null; then
+        printf "\033[33m[ ⚠️ MISSING ] 'yt-dlp' not installed. Run: pipx install yt-dlp\033[0m\n"
+        return 1
+    fi
+
     local template="%(title)s.%(ext)s"
 
     case "$1" in
         best)
             [[ -z "$2" ]] && printf "\033[31m[ ❌ ERROR ] Missing URL. Usage: yt best \"<url>\"\033[0m\n" && return 1
-            yt-dlp -o "$template" "$2" && \
+            yt-dlp --no-playlist -o "$template" "$2" && \
             printf "\033[32m[ 🚀 DOWNLOADED ] Best quality media saved to current directory (%s)\033[0m\n" "$PWD"
             ;;
         1080)
             [[ -z "$2" ]] && printf "\033[31m[ ❌ ERROR ] Missing URL. Usage: yt 1080 \"<url>\"\033[0m\n" && return 1
-            yt-dlp -f "bv*[height<=1080]+ba/b[height<=1080]" --merge-output-format mp4 -o "$template" "$2" && \
+            yt-dlp --no-playlist -f "bv*[height<=1080]+ba/b[height<=1080]" --merge-output-format mp4 -o "$template" "$2" && \
             printf "\033[32m[ 🎬 DOWNLOADED ] 1080p MP4 video saved to current directory (%s)\033[0m\n" "$PWD"
             ;;
         mp3)
             [[ -z "$2" ]] && printf "\033[31m[ ❌ ERROR ] Missing URL. Usage: yt mp3 \"<url>\"\033[0m\n" && return 1
-            yt-dlp -x --audio-format mp3 --audio-quality 0 -o "$template" "$2" && \
+            yt-dlp --no-playlist -x --audio-format mp3 --audio-quality 0 -o "$template" "$2" && \
             printf "\033[32m[ 🎧 EXTRACTED ] High-bitrate MP3 audio saved to current directory (%s)\033[0m\n" "$PWD"
             ;;
         *)
