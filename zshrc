@@ -17,6 +17,31 @@ source "$ZSH/oh-my-zsh.sh"
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
 
+yt() {
+    local template="%(title)s.%(ext)s"
+
+    case "$1" in
+        best)
+            [[ -z "$2" ]] && printf "\033[31m[ ❌ ERROR ] Missing URL. Usage: yt best \"<url>\"\033[0m\n" && return 1
+            yt-dlp -o "$template" "$2" && \
+            printf "\033[32m[ 🚀 DOWNLOADED ] Best quality media saved to current directory (%s)\033[0m\n" "$PWD"
+            ;;
+        1080)
+            [[ -z "$2" ]] && printf "\033[31m[ ❌ ERROR ] Missing URL. Usage: yt 1080 \"<url>\"\033[0m\n" && return 1
+            yt-dlp -f "bv*[height<=1080]+ba/b[height<=1080]" --merge-output-format mp4 -o "$template" "$2" && \
+            printf "\033[32m[ 🎬 DOWNLOADED ] 1080p MP4 video saved to current directory (%s)\033[0m\n" "$PWD"
+            ;;
+        mp3)
+            [[ -z "$2" ]] && printf "\033[31m[ ❌ ERROR ] Missing URL. Usage: yt mp3 \"<url>\"\033[0m\n" && return 1
+            yt-dlp -x --audio-format mp3 --audio-quality 0 -o "$template" "$2" && \
+            printf "\033[32m[ 🎧 EXTRACTED ] High-bitrate MP3 audio saved to current directory (%s)\033[0m\n" "$PWD"
+            ;;
+        *)
+            printf "\033[33m[ 💡 INFO ] Usage: yt [best|1080|mp3] \"<url>\"\033[0m\n"
+            ;;
+    esac
+}
+
 tomov() {
     if [ -z "$1" ]; then
         printf "\033[31m[ ❌ ERROR ] Please specify a file! Example: tomov input.mp4\033[0m\n"
@@ -607,6 +632,16 @@ update-all() {
         flatpak update -y
     fi
 
+    printf "\033[34m=== 4. Checking Reboot Requirement ===\033[0m\n"
+    sudo zypper needs-rebooting
+    local reboot_status=$?
+
+    if [[ $reboot_status -eq 102 ]]; then
+        printf "\033[33m[ ⚠️  REBOOT ] Core libraries or kernel updated — reboot recommended!\033[0m\n"
+    elif [[ $reboot_status -eq 0 ]]; then
+        printf "\033[32m[ ✅ OK ] No reboot required.\033[0m\n"
+    fi
+
     printf "\033[32mopenSUSE system synchronization completed successfully! 🚀🔥\033[0m\n"
 }
 
@@ -684,7 +719,7 @@ alias gitprinfo="onefetch"
 alias offlaptop="systemctl poweroff"
 alias rebootlaptop="systemctl reboot"
 alias checksession='echo $XDG_SESSION_TYPE'
-alias whereami="pwd"
+alias reloadzsh='source ~/.zshrc'
 alias changeconfzsh="p10k configure"
 alias workwithgit="lazygit"
 alias workwithdocker="lazydocker"
