@@ -7,8 +7,13 @@ export ZSH="$HOME/.oh-my-zsh"
 
 export LIBVA_DRIVER_NAME=nvidia
 
-export JAVA_HOME=/usr/lib64/jvm/java-21-openjdk-21
-export PATH="$JAVA_HOME/bin:/opt/gradle/gradle-9.9.0/bin:$PATH"
+export PATH=/usr/local/cuda-13.4/bin${PATH:+:${PATH}}
+export LD_LIBRARY_PATH=/usr/local/cuda-13.4/lib64${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}
+
+export JAVA_HOME=/usr/lib64/jvm/java-25-openjdk-25
+export PATH="$JAVA_HOME/bin:/opt/gradle/gradle-9.9.1/bin:$PATH"
+
+export DOTNET_CLI_TELEMETRY_OPTOUT=1
 
 ZSH_THEME="powerlevel10k/powerlevel10k"
 plugins=(git zsh-syntax-highlighting zsh-autosuggestions)
@@ -724,7 +729,7 @@ alias gitprinfo="onefetch"
 alias offlaptop="systemctl poweroff"
 alias rebootlaptop="systemctl reboot"
 alias checksession='echo $XDG_SESSION_TYPE'
-alias reloadzsh='source ~/.zshrc'
+alias checknet="speedtest"
 alias changeconfzsh="p10k configure"
 alias workwithgit="lazygit"
 alias workwithdocker="lazydocker"
