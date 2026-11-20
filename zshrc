@@ -650,7 +650,6 @@ genpass() {
     printf "\033[32m[ 🔐 COPIED ] Strong %s-char password generated & copied to clipboard!\033[0m\n" "$len"
 }
 
-
 extract() {
     if [ -f "$1" ]; then
         case "$1" in
@@ -778,6 +777,7 @@ alias offlaptop="systemctl poweroff"
 alias rebootlaptop="systemctl reboot"
 alias checksession='echo $XDG_SESSION_TYPE'
 alias checknet="speedtest"
+alias checkports="snitch"
 alias netmonitoring="netwatch"
 alias codestatics="tokei"
 alias changeconfzsh="p10k configure"
