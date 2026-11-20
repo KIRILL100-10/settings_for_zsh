@@ -644,6 +644,13 @@ workwithlogs() {
     fi
 }
 
+genpass() {
+    local len="${1:-20}"
+    pwgen -sy "$len" 1 | tee >(wl-copy 2>/dev/null || xclip -selection clipboard 2>/dev/null)
+    printf "\033[32m[ 🔐 COPIED ] Strong %s-char password generated & copied to clipboard!\033[0m\n" "$len"
+}
+
+
 extract() {
     if [ -f "$1" ]; then
         case "$1" in
@@ -767,11 +774,9 @@ alias ls='eza --icons --group-directories-first'
 alias ll='eza -la --icons --group-directories-first --git'
 alias lt='eza --tree --level=2 --icons'
 alias cat='bat --paging=never'
-alias rep='sd'
 alias offlaptop="systemctl poweroff"
 alias rebootlaptop="systemctl reboot"
 alias checksession='echo $XDG_SESSION_TYPE'
-alias checkprocesses="btm"
 alias checknet="speedtest"
 alias netmonitoring="netwatch"
 alias codestatics="tokei"
