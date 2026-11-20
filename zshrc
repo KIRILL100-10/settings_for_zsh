@@ -626,6 +626,43 @@ workwithmd() {
     fi
 }
 
+workwithlogs() {
+    if ! command -v lnav &>/dev/null; then
+        printf "\033[33m[ ⚠️ MISSING ] 'lnav' not installed in ~/.local/bin!\033[0m\n"
+        return 1
+    fi
+
+    if [[ $# -eq 0 ]]; then
+        printf "\033[34m[ 📜 LOGS ] Launching interactive system & service logs navigator...\033[0m\n"
+        lnav
+    elif [[ -f "$1" || -d "$1" ]]; then
+        printf "\033[34m[ 📜 LOGS ] Analyzing log target '$1'...\033[0m\n"
+        lnav "$@"
+    else
+        printf "\033[31m[ ❌ ERROR ] Log file or directory '$1' not found!\033[0m\n"
+        return 1
+    fi
+}
+
+extract() {
+    if [ -f "$1" ]; then
+        case "$1" in
+            *.zip)     ripunzip unzip-file "$1" ;;
+            *.tar.*)   tar -xf "$1" ;;
+            *.tgz)     tar -xzf "$1" ;;
+            *.txz)     tar -xJf "$1" ;;
+            *.7z)      7z x "$1" ;;
+            *.rar)     unrar x "$1" ;;
+            *.gz)      gunzip "$1" ;;
+            *.xz)      unxz "$1" ;;
+            *.zst)     unzstd "$1" ;;
+            *)         echo "❌ Unknown archive format: '$1'" ;;
+        esac
+    else
+        echo "❌ File '$1' not found"
+    fi
+}
+
 update-all() {
     printf "\033[34m=== 1. Upgrading openSUSE Leap Repos & Core System ===\033[0m\n"
     sudo zypper ref && sudo zypper up -y
@@ -726,10 +763,18 @@ dclean() {
 alias cleanpip="pip cache purge"
 alias myosinfo="fastfetch"
 alias gitprinfo="onefetch"
+alias ls='eza --icons --group-directories-first'
+alias ll='eza -la --icons --group-directories-first --git'
+alias lt='eza --tree --level=2 --icons'
+alias cat='bat --paging=never'
+alias rep='sd'
 alias offlaptop="systemctl poweroff"
 alias rebootlaptop="systemctl reboot"
 alias checksession='echo $XDG_SESSION_TYPE'
+alias checkprocesses="btm"
 alias checknet="speedtest"
+alias netmonitoring="netwatch"
+alias codestatics="tokei"
 alias changeconfzsh="p10k configure"
 alias workwithgit="lazygit"
 alias workwithdocker="lazydocker"
