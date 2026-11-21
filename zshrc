@@ -730,7 +730,7 @@ findjavaclass() {
     local query="$1"
 
     if [[ -z "$query" ]]; then
-        printf "\033[33m[ 💡 INFO ] Provide class name to search (e.g. findclass ArrayList or findclass com/example/App)\033[0m\n"
+        printf "\033[33m[ 💡 INFO ] Provide class name to search (e.g. findjavaclass ArrayList or findjavaclass com/example/App)\033[0m\n"
         return 1
     fi
 
