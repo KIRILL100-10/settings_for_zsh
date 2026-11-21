@@ -10,8 +10,9 @@ export LIBVA_DRIVER_NAME=nvidia
 export PATH=/usr/local/cuda-13.4/bin${PATH:+:${PATH}}
 export LD_LIBRARY_PATH=/usr/local/cuda-13.4/lib64${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}
 
-export JAVA_HOME=/usr/lib64/jvm/java-25-openjdk-25
-export PATH="$JAVA_HOME/bin:/opt/gradle/gradle-9.9.1/bin:$PATH"
+export GRADLE_HOME="/opt/gradle/gradle-9.9.1"
+export JAVA_HOME="/usr/lib64/jvm/java-25-openjdk-25"
+export PATH="$JAVA_HOME/bin:$GRADLE_HOME/bin:$PATH"
 
 export DOTNET_CLI_TELEMETRY_OPTOUT=1
 
@@ -21,6 +22,211 @@ plugins=(git zsh-syntax-highlighting zsh-autosuggestions)
 source "$ZSH/oh-my-zsh.sh"
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
+
+devhelp() {
+    printf "\033[36m╔══════════════════════════════════════════════════════════════════╗\033[0m\n"
+    printf "\033[36m║            💻 MULTI-LANGUAGE DEV & LINTERS CHEATSHEET            ║\033[0m\n"
+    printf "\033[36m╚══════════════════════════════════════════════════════════════════╝\033[0m\n"
+
+    printf "\n\033[33m[ 🚀 RUNNERS & SANDBOXES ]\033[0m\n"
+    printf "  \033[32m%-26s\033[0m %s\n" "runpy [file.py]"          "Run Python script (default: main.py / app.py)"
+    printf "  \033[32m%-26s\033[0m %s\n" "runc [file.c]"            "Compile via GCC (-O2), run & auto-clean binary"
+    printf "  \033[32m%-26s\033[0m %s\n" "runcpp [file.cpp]"        "Compile via G++ (C++20), run & auto-clean binary"
+    printf "  \033[32m%-26s\033[0m %s\n" "runcs [proj_name]"        "Run .NET project or scaffold new console app + Code"
+    printf "  \033[32m%-26s\033[0m %s\n" "runphp [file.php]"        "Run PHP script or start localhost:8000 (index.php)"
+    printf "  \033[32m%-26s\033[0m %s\n" "runnode [file.js]"        "Run JS file, npm dev/start, or server.js/app.js"
+    printf "  \033[32m%-26s\033[0m %s\n" "runlua [file.lua]"        "Run Lua script (default: main.lua)"
+    printf "  \033[32m%-26s\033[0m %s\n" "runsql [file.sql] [db]"   "Execute SQL in PostgreSQL (default: schema/query)"
+    printf "  \033[32m%-26s\033[0m %s\n" "runsh [script.sh]"        "Auto chmod +x and run shell script"
+
+    printf "\n\033[33m[ 🐍 PYTHON & NODE ENVIRONMENTS ]\033[0m\n"
+    printf "  \033[32m%-26s\033[0m %s\n" "venv / va"                "Create & activate .venv / activate existing .venv"
+    printf "  \033[32m%-26s\033[0m %s\n" "up-venv"                  "Upgrade all outdated pip packages in active/.venv"
+    printf "  \033[32m%-26s\033[0m %s\n" "up-node [package.json]"   "Update all local npm dependencies"
+
+    printf "\n\033[33m[ 🔍 STATIC ANALYSIS & LINTERS ]\033[0m\n"
+    printf "  \033[32m%-26s\033[0m %s\n" "checkdocker [Dockerfile]" "Lint Dockerfile via Hadolint"
+    printf "  \033[32m%-26s\033[0m %s\n" "checkcpp [path]"          "Deep C/C++ static analysis via Cppcheck"
+    printf "  \033[32m%-26s\033[0m %s\n" "checkshell [script.sh]"   "Lint Bash/Shell script via ShellCheck"
+    printf "\n"
+}
+
+javahelp() {
+    printf "\033[36m╔══════════════════════════════════════════════════════════════════╗\033[0m\n"
+    printf "\033[36m║               ☕ JAVA & JVM ZSH TOOLKIT CHEATSHEET               ║\033[0m\n"
+    printf "\033[36m╚══════════════════════════════════════════════════════════════════╝\033[0m\n"
+
+    printf "\n\033[33m[ 🔧 ENVIRONMENT & VERSIONS ]\033[0m\n"
+    printf "  \033[32m%-26s\033[0m %s\n" "javainfo"                 "Show active Java, Gradle & all installed JDKs"
+    printf "  \033[32m%-26s\033[0m %s\n" "usejava <8|25>"           "Switch active JDK in current terminal session"
+
+    printf "\n\033[33m[ 🚀 EXECUTION & FRAMEWORKS ]\033[0m\n"
+    printf "  \033[32m%-26s\033[0m %s\n" "runjava [File.java]"      "Compile, run & clean .class (default: Main.java)"
+    printf "  \033[32m%-26s\033[0m %s\n" "runjar [app.jar] [args]"  "Run executable JAR (auto-detects single .jar)"
+    printf "  \033[32m%-26s\033[0m %s\n" "runjavafx"                "Launch JavaFX via Maven or Gradle wrapper"
+    printf "  \033[32m%-26s\033[0m %s\n" "runspring"                "Launch Spring Boot via Maven or Gradle wrapper"
+
+    printf "\n\033[33m[ 📦 PACKAGING & ARCHIVES ]\033[0m\n"
+    printf "  \033[32m%-26s\033[0m %s\n" "buildjar [Main] [out.jar]" "Compile all .java into executable JAR"
+    printf "  \033[32m%-26s\033[0m %s\n" "extract <archive>"         "Unpack .jar, .war, .zip, .tar.*, .7z, .rar"
+
+    printf "\n\033[33m[ 🔍 REVERSE ENGINEERING & ANALYSIS ]\033[0m\n"
+    printf "  \033[32m%-26s\033[0m %s\n" "decompilejava [target]"    "Decompile .class/.jar via Vineflower + VS Code"
+    printf "  \033[32m%-26s\033[0m %s\n" "bytecode [File.class]"     "Inspect JVM bytecode via javap (add 'save' for txt)"
+    printf "  \033[32m%-26s\033[0m %s\n" "findjavaclass <Name>"     "Search for class inside all local .jar files"
+
+    printf "\n\033[34m[ 💡 TIP ] Run 'javahelp' anytime you forget flags or defaults! 😎\033[0m\n\n"
+}
+
+mediahelp() {
+    printf "\033[36m╔══════════════════════════════════════════════════════════════════╗\033[0m\n"
+    printf "\033[36m║             🎬 MEDIA, FFMPEG & CUDA AI CHEATSHEET                ║\033[0m\n"
+    printf "\033[36m╚══════════════════════════════════════════════════════════════════╝\033[0m\n"
+
+    printf "\n\033[33m[ ⬇️ DOWNLOAD & STUDIO ]\033[0m\n"
+    printf "  \033[32m%-26s\033[0m %s\n" "yt <best|1080|mp3> <url>" "Download video/audio via yt-dlp to current dir"
+    printf "  \033[32m%-26s\033[0m %s\n" "davinci"                  "Launch DaVinci Resolve on NVIDIA GPU (prime-run)"
+    printf "  \033[32m%-26s\033[0m %s\n" "checkmedia <file>"        "Inspect video/audio codecs & metadata (mediainfo)"
+
+    printf "\n\033[33m[ 🎞️ FFMPEG TRANSCODING ]\033[0m\n"
+    printf "  \033[32m%-26s\033[0m %s\n" "tomov <file>"             "Transcode to DNxHR HQX 10-bit .mov + PCM 24-bit"
+    printf "  \033[32m%-26s\033[0m %s\n" "tomp4 <file>"             "Compress to H.264 MP4 (CRF 20, AAC audio)"
+    printf "  \033[32m%-26s\033[0m %s\n" "extsound <file>"          "Extract audio track to WAV 16-bit 48kHz"
+    printf "  \033[32m%-26s\033[0m %s\n" "towav <file>"             "Upconvert audio to WAV 24-bit PCM 48kHz"
+
+    printf "\n\033[33m[ 🧠 NEURAL NETWORKS (NVIDIA CUDA) ]\033[0m\n"
+    printf "  \033[32m%-26s\033[0m %s\n" "splitaudio <file>"        "Separate stems via Demucs AI on CUDA"
+    printf "  \033[32m%-26s\033[0m %s\n" "createsub <file>"         "Transcribe / generate subs via Faster Whisper"
+    printf "\n"
+}
+
+opshelp() {
+    printf "\033[36m╔══════════════════════════════════════════════════════════════════╗\033[0m\n"
+    printf "\033[36m║           🐳 DOCKER, SERVERS, NETWORK & LOGS CHEATSHEET          ║\033[0m\n"
+    printf "\033[36m╚══════════════════════════════════════════════════════════════════╝\033[0m\n"
+
+    printf "\n\033[33m[ 🐳 DOCKER INFRASTRUCTURE ]\033[0m\n"
+    printf "  \033[32m%-26s\033[0m %s\n" "dps / dimages"            "List containers (formatted) / list local images"
+    printf "  \033[32m%-26s\033[0m %s\n" "dclean"                   "Hard purge all unused containers, images & volumes"
+    printf "  \033[32m%-26s\033[0m %s\n" "workwithdocker"           "Launch Lazydocker TUI manager"
+
+    printf "\n\033[33m[ 🌐 WEB SERVER, PORTS & NETWORK ]\033[0m\n"
+    printf "  \033[32m%-26s\033[0m %s\n" "apache <start|stop|...>"  "Control Apache2 + PHP-FPM systemd services"
+    printf "  \033[32m%-26s\033[0m %s\n" "killport [port]"          "Force kill process occupying port (default: 8080)"
+    printf "  \033[32m%-26s\033[0m %s\n" "checkports"               "Inspect active network ports (snitch)"
+    printf "  \033[32m%-26s\033[0m %s\n" "netmonitoring"            "Real-time network traffic monitor (netwatch)"
+    printf "  \033[32m%-26s\033[0m %s\n" "checknet"                 "Run internet bandwidth speedtest"
+
+    printf "\n\033[33m[ 📜 LOGS ]\033[0m\n"
+    printf "  \033[32m%-26s\033[0m %s\n" "workwithlogs [target]"    "Navigate system or file logs interactively (lnav)"
+    printf "\n"
+}
+
+syshelp() {
+    printf "\033[36m╔══════════════════════════════════════════════════════════════════╗\033[0m\n"
+    printf "\033[36m║              🐧 OPENSUSE LEAP & SYSTEM CHEATSHEET                ║\033[0m\n"
+    printf "\033[36m╚══════════════════════════════════════════════════════════════════╝\033[0m\n"
+
+    printf "\n\033[33m[ 📦 ZYPPER PACKAGE MANAGER ]\033[0m\n"
+    printf "  \033[32m%-26s\033[0m %s\n" "zin <pkg...>"             "Install packages via sudo zypper install"
+    printf "  \033[32m%-26s\033[0m %s\n" "zin-nogpg <pkg|rpm>"      "Install package/RPM ignoring GPG checks"
+    printf "  \033[32m%-26s\033[0m %s\n" "zrm <pkg...>"             "Remove packages + unneeded dependencies (-u)"
+
+    printf "\n\033[33m[ 🔄 UPDATES & MAINTENANCE ]\033[0m\n"
+    printf "  \033[32m%-26s\033[0m %s\n" "update-all"               "Upgrade Zypper, Pipx, Flatpak & check reboot status"
+    printf "  \033[32m%-26s\033[0m %s\n" "cleanpip"                 "Purge local pip download cache"
+    printf "  \033[32m%-26s\033[0m %s\n" "changeconfzsh"            "Run Powerlevel10k configuration wizard"
+
+    printf "\n\033[33m[ 💻 HARDWARE, SESSION & POWER ]\033[0m\n"
+    printf "  \033[32m%-26s\033[0m %s\n" "myosinfo"                 "Display system & hardware summary (fastfetch)"
+    printf "  \033[32m%-26s\033[0m %s\n" "checksession"             "Show active display protocol (Wayland / X11)"
+    printf "  \033[32m%-26s\033[0m %s\n" "rebootlaptop / offlaptop" "Reboot or power off laptop via systemctl"
+    printf "\n"
+}
+
+toolshelp() {
+    printf "\033[36m╔══════════════════════════════════════════════════════════════════╗\033[0m\n"
+    printf "\033[36m║             🛠️ TUI WORKSPACE, FILES & UTILS CHEATSHEET           ║\033[0m\n"
+    printf "\033[36m╚══════════════════════════════════════════════════════════════════╝\033[0m\n"
+
+    printf "\n\033[33m[ 🖥️ TUI CLIENTS (WORKWITH*) ]\033[0m\n"
+    printf "  \033[32m%-26s\033[0m %s\n" "workwithfiles"            "Terminal file manager (yazi)"
+    printf "  \033[32m%-26s\033[0m %s\n" "workwithgit"              "Interactive Git TUI client (lazygit)"
+    printf "  \033[32m%-26s\033[0m %s\n" "workwithapi"              "Terminal HTTP/API client (posting)"
+    printf "  \033[32m%-26s\033[0m %s\n" "workwithsql"              "Terminal SQL database TUI (sqlit)"
+    printf "  \033[32m%-26s\033[0m %s\n" "workwithmd [file.md]"     "Render Markdown in terminal via glow (default: README)"
+    printf "  \033[32m%-26s\033[0m %s\n" "readdocs <cmd|update>"    "Quick command examples via tldr (fallback to man)"
+
+    printf "\n\033[33m[ 📁 FILES, ARCHIVES & SECURITY ]\033[0m\n"
+    printf "  \033[32m%-26s\033[0m %s\n" "ls / ll / lt"             "Modern eza listing / detailed + git / 2-level tree"
+    printf "  \033[32m%-26s\033[0m %s\n" "cat <file>"               "Syntax-highlighted file viewer (bat)"
+    printf "  \033[32m%-26s\033[0m %s\n" "extract <archive>"        "Universal unpacker (.zip/.jar/.tar.*/.7z/.rar/.zst)"
+    printf "  \033[32m%-26s\033[0m %s\n" "genpass [length]"         "Generate strong password & copy to clipboard (def: 20)"
+    printf "  \033[32m%-26s\033[0m %s\n" "gitprinfo"                "Show Git repository stats & languages (onefetch)"
+    printf "\n"
+}
+
+myhelp() {
+    case "$1" in
+        java)   javahelp ;;
+        dev)    devhelp ;;
+        media)  mediahelp ;;
+        ops)    opshelp ;;
+        sys)    syshelp ;;
+        tools)  toolshelp ;;
+        -h|--help|help)
+            printf "\033[34m[ 📚 MYHELP USAGE ]\033[0m\n"
+            printf "  \033[32mmyhelp\033[0m        — Open full cheatsheet in interactive viewer (press 'q' to exit, '/' to search)\n"
+            printf "  \033[32mmyhelp java\033[0m   — Java 8/25, Gradle, Spring, JAR & Vineflower\n"
+            printf "  \033[32mmyhelp dev\033[0m    — Python, C/C++, C#, PHP, Node, Lua, SQL, Shell & Linters\n"
+            printf "  \033[32mmyhelp media\033[0m  — yt-dlp, FFmpeg, DaVinci Resolve, Demucs & Whisper\n"
+            printf "  \033[32mmyhelp ops\033[0m    — Docker, Apache2, Ports, Network & lnav Logs\n"
+            printf "  \033[32mmyhelp sys\033[0m    — openSUSE updates, ZSH config, Fastfetch & Power\n"
+            printf "  \033[32mmyhelp tools\033[0m  — Yazi, Lazygit, Posting, Sqlit, Glow, Extract & Passwords\n"
+            ;;
+        "")
+            {
+                javahelp
+                devhelp
+                mediahelp
+                opshelp
+                syshelp
+                toolshelp
+            } | less -R
+            ;;
+        *)
+            printf "\033[31m[ ❌ ERROR ] Unknown category '%s'! Available: java, dev, media, ops, sys, tools\033[0m\n" "$1"
+            return 1
+            ;;
+    esac
+}
+
+zin() {
+    if [[ $# -eq 0 ]]; then
+        printf "\033[33m[ 💡 INFO ] Usage: zin <package1> [package2 ...]\033[0m\n"
+        return 1
+    fi
+    printf "\033[34m[ 📦 ZYPPER ] Installing package(s): %s...\033[0m\n" "$*"
+    sudo zypper install "$@"
+}
+
+zin-nogpg() {
+    if [[ $# -eq 0 ]]; then
+        printf "\033[33m[ 💡 INFO ] Usage: zin-nogpg <package_or_rpm>\033[0m\n"
+        return 1
+    fi
+    printf "\033[33m[ ⚠️ ZYPPER ] Installing without GPG signature checks: %s...\033[0m\n" "$*"
+    sudo zypper --no-gpg-checks install "$@"
+}
+
+zrm() {
+    if [[ $# -eq 0 ]]; then
+        printf "\033[33m[ 💡 INFO ] Usage: zrm <package1> [package2 ...]\033[0m\n"
+        return 1
+    fi
+    printf "\033[31m[ 🗑️ ZYPPER ] Removing package(s) with unneeded dependencies (-u): %s...\033[0m\n" "$*"
+    sudo zypper remove -u "$@"
+}
 
 yt() {
     if ! command -v yt-dlp &>/dev/null; then
@@ -250,6 +456,72 @@ runpy() {
     fi
 }
 
+javainfo() {
+    printf "\033[34m[ ☕ JVM & BUILD ENVIRONMENT ]\033[0m\n"
+    printf "\033[33m──────────────────────────────────────────────────\033[0m\n"
+    printf "  \033[32m%-15s\033[0m %s\n" "JAVA_HOME:" "${JAVA_HOME:-not set}"
+    printf "  \033[32m%-15s\033[0m %s\n" "Active Java:" "$(java -version 2>&1 | head -n 1)"
+    printf "  \033[32m%-15s\033[0m %s\n" "Type:" "$([[ -x "$JAVA_HOME/bin/javac" ]] && echo 'Full JDK (Compiler + Runtime)' || echo 'JRE Only (Runtime only, no javac)')"
+    printf "  \033[32m%-15s\033[0m %s\n" "Active Gradle:" "$(gradle -v 2>/dev/null | grep '^Gradle ' || echo 'not found')"
+    printf "\033[33m──────────────────────────────────────────────────\033[0m\n"
+    printf "\033[34m[ 📂 INSTALLED JVMs IN /usr/lib64/jvm ]\033[0m\n"
+    for dir in /usr/lib64/jvm/java-*(N/); do
+        local clean_dir="${dir%/}"
+        local tag=$([[ -x "$clean_dir/bin/javac" ]] && echo "JDK" || echo "JRE")
+        if [[ "$clean_dir" == "${JAVA_HOME%/}" ]]; then
+            printf "  \033[32m👉 %s [%s] (ACTIVE)\033[0m\n" "$clean_dir" "$tag"
+        else
+            printf "     %s [%s]\n" "$clean_dir" "$tag"
+        fi
+    done
+}
+
+usejava() {
+    local ver="$1"
+    if [[ -z "$ver" ]]; then
+        printf "\033[33m[ 💡 INFO ] Specify version: 'usejava 8' (Minecraft JRE) or 'usejava 25' (Spring JDK)\033[0m\n"
+        javainfo
+        return 1
+    fi
+
+    local target_jvm=""
+    if [[ "$ver" == "8" ]]; then
+        target_jvm="/usr/lib64/jvm/java-1.8.0-openjdk-1.8.0"
+    elif [[ "$ver" == "25" ]]; then
+        target_jvm="/usr/lib64/jvm/java-25-openjdk-25"
+    else
+        target_jvm=$(ls -d /usr/lib64/jvm/java-${ver}-openjdk* 2>/dev/null | head -n 1)
+    fi
+
+    target_jvm="${target_jvm%/}"
+
+    if [[ -z "$target_jvm" || ! -d "$target_jvm" ]]; then
+        printf "\033[31m[ ❌ ERROR ] JVM version '%s' not found in /usr/lib64/jvm! 🛑\033[0m\n" "$ver"
+        return 1
+    fi
+
+    local old_bin="${JAVA_HOME%/}/bin:"
+    local old_jre_bin="${JAVA_HOME%/}/jre/bin:"
+    export PATH="${PATH//$old_bin/}"
+    export PATH="${PATH//$old_jre_bin/}"
+
+    export JAVA_HOME="$target_jvm"
+    if [[ -d "$JAVA_HOME/bin" ]]; then
+        export PATH="$JAVA_HOME/bin:$PATH"
+    elif [[ -d "$JAVA_HOME/jre/bin" ]]; then
+        export PATH="$JAVA_HOME/jre/bin:$PATH"
+    fi
+
+    rehash
+
+    printf "\033[32m[ 🔄 SWITCHED ] Active JVM is now: %s 😎\033[0m\n" "$JAVA_HOME"
+    java -version 2>&1 | head -n 1
+
+    if [[ ! -x "$JAVA_HOME/bin/javac" ]]; then
+        printf "\033[33m[ ⚠️ JRE ONLY ] Notice: 'javac' is missing here (Runtime only). Switch back with 'usejava 25' to compile! 🎮\033[0m\n"
+    fi
+}
+
 runjava() {
     local file="$1"
     if [[ -z "$file" ]]; then
@@ -287,6 +559,202 @@ runjava() {
     else
         printf "\033[31m[ ❌ BUILD FAILED ] Target build crashed! Check your syntax inside VS Code.\033[0m\n"
         return 1
+    fi
+}
+
+decompilejava() {
+    local jar_path="$HOME/.local/share/vineflower/vineflower.jar"
+
+    if [[ ! -f "$jar_path" ]]; then
+        printf "\033[31m[ ❌ ERROR ] Vineflower core missing at '$jar_path'! 🛑\033[0m\n"
+        return 1
+    fi
+
+    local file="$1"
+    if [[ -z "$file" ]]; then
+        if [[ -f "Main.class" ]]; then
+            file="Main.class"
+        else
+            printf "\033[33m[ 💡 INFO ] Provide target (.class / .jar) or place Main.class here\033[0m\n"
+            return 1
+        fi
+    fi
+
+    if [[ ! -f "$file" ]]; then
+        printf "\033[31m[ ❌ ERROR ] Target file '$file' not found in this directory! 🛑\033[0m\n"
+        return 1
+    fi
+
+    local EXT="${file:e:l}"
+    local BASE_NAME="${file:t:r}"
+    local PARENT_DIR="${file:h}"
+    local OUT_TARGET=""
+    local CODE_TARGET=""
+    local SUCCESS_MSG=""
+
+    if [[ "$EXT" == "jar" || "$EXT" == "war" ]]; then
+        OUT_TARGET="${PARENT_DIR}/${BASE_NAME}_src"
+        CODE_TARGET="$OUT_TARGET"
+        mkdir -p "$OUT_TARGET"
+        SUCCESS_MSG="Archive unpacked & decoded! Sources saved in ${OUT_TARGET}/"
+    elif [[ "$EXT" == "class" ]]; then
+        OUT_TARGET="$PARENT_DIR"
+        CODE_TARGET="${OUT_TARGET}/${BASE_NAME}.java"
+        SUCCESS_MSG="Bytecode decoded! Source saved as ${CODE_TARGET}"
+    else
+        printf "\033[31m[ ❌ ERROR ] Unsupported format '.%s'! Expected .class or .jar 🛑\033[0m\n" "$EXT"
+        return 1
+    fi
+
+    printf "\033[34m[ 🔍 DECOMPILING ] Reverse-engineering %s via Vineflower core...\033[0m\n" "$file"
+    printf "\033[33m──────────────────────────────────────────────────\033[0m\n"
+
+    if java -jar "$jar_path" --ascii-strings=0 --decompile-generics=1 "$file" "$OUT_TARGET"; then
+        printf "\033[33m──────────────────────────────────────────────────\033[0m\n"
+        printf "\033[32m[ 🎉 SUCCESS ] %s 😎🏆\033[0m\n" "$SUCCESS_MSG"
+
+        if command -v code >/dev/null 2>&1; then
+            printf "\033[34m[ 💻 VS CODE ] Opening decoded target in editor...\033[0m\n"
+            code "$CODE_TARGET"
+        fi
+    else
+        printf "\033[33m──────────────────────────────────────────────────\033[0m\n"
+        printf "\033[31m[ ❌ FAILED ] Decompilation crashed! Target might be corrupted or heavily obfuscated. 🛑\033[0m\n"
+        return 1
+    fi
+}
+
+bytecode() {
+    local file="${1:-Main.class}"
+    local mode="$2"
+
+    if [[ ! -f "$file" ]]; then
+        printf "\033[31m[ ❌ ERROR ] Target bytecode '$file' not found! Provide a .class file or place Main.class here. 🛑\033[0m\n"
+        return 1
+    fi
+
+    if ! command -v javap >/dev/null 2>&1; then
+        printf "\033[31m[ ❌ ERROR ] 'javap' utility not found! Is OpenJDK devel package installed? 🛑\033[0m\n"
+        return 1
+    fi
+
+    printf "\033[34m[ 🔬 DISASSEMBLING ] Inspecting JVM instructions for %s...\033[0m\n" "$file"
+
+    if [[ "$mode" == "save" ]]; then
+        local out_txt="${file%.class}_bytecode.txt"
+        javap -c -p -v "$file" > "$out_txt"
+        printf "\033[32m[ 🎉 SUCCESS ] Bytecode dump saved to %s 😎\033[0m\n" "$out_txt"
+        command -v code >/dev/null 2>&1 && code "$out_txt"
+    else
+        printf "\033[33m[ 💡 TIP ] Press 'q' to exit viewer, or run 'bytecode %s save' to open in VS Code.\033[0m\n" "$file"
+        sleep 0.5
+        javap -c -p -v "$file" | less
+    fi
+}
+
+buildjar() {
+    local main_file="${1:-Main.java}"
+
+    if [[ ! -f "$main_file" ]]; then
+        printf "\033[31m[ ❌ ERROR ] Entry point '$main_file' not found! Provide Main.java or pass target file. 🛑\033[0m\n"
+        return 1
+    fi
+
+    local MAIN_CLASS="${main_file%.java}"
+    local JAR_NAME="${2:-${MAIN_CLASS}.jar}"
+    local BUILD_DIR=".tmp_jar_build_$$"
+
+    printf "\033[34m[ 📦 PACKAGING ] Compiling sources for entry point '%s'...\033[0m\n" "$MAIN_CLASS"
+    printf "\033[33m──────────────────────────────────────────────────\033[0m\n"
+
+    mkdir -p "$BUILD_DIR"
+
+    if javac -d "$BUILD_DIR" *.java; then
+        printf "\033[34m[ ⚙️ ARCHIVING ] Building executable JAR '%s'...\033[0m\n" "$JAR_NAME"
+        if jar cfe "$JAR_NAME" "$MAIN_CLASS" -C "$BUILD_DIR" .; then
+            rm -rf "$BUILD_DIR"
+            printf "\033[33m──────────────────────────────────────────────────\033[0m\n"
+            printf "\033[32m[ 🎉 SUCCESS ] Executable archive '%s' is ready! Run it with: java -jar %s 😎🏆\033[0m\n" "$JAR_NAME" "$JAR_NAME"
+        else
+            rm -rf "$BUILD_DIR"
+            printf "\033[31m[ ❌ FAILED ] JAR archiving crashed! 🛑\033[0m\n"
+            return 1
+        fi
+    else
+        rm -rf "$BUILD_DIR"
+        printf "\033[33m──────────────────────────────────────────────────\033[0m\n"
+        printf "\033[31m[ ❌ BUILD FAILED ] Compilation errors detected! Fix your code first. 🛑\033[0m\n"
+        return 1
+    fi
+}
+
+runjar() {
+    local file="$1"
+
+    if [[ -z "$file" ]]; then
+        local jars=(*.jar(N))
+        if [[ ${#jars[@]} -eq 1 ]]; then
+            file="${jars[1]}"
+        elif [[ ${#jars[@]} -gt 1 ]]; then
+            printf "\033[33m[ 💡 INFO ] Multiple JARs found! Specify target: %s\033[0m\n" "${jars[*]}"
+            return 1
+        else
+            printf "\033[33m[ 💡 INFO ] Provide target archive (e.g. runjar app.jar) or place a .jar here\033[0m\n"
+            return 1
+        fi
+    else
+        shift
+    fi
+
+    if [[ ! -f "$file" ]]; then
+        printf "\033[31m[ ❌ ERROR ] Archive '$file' not found in this directory! 🛑\033[0m\n"
+        return 1
+    fi
+
+    printf "\033[34m[ ☕ JAR LAUNCHER ] Executing '%s' on JVM (%s)... 🚀\033[0m\n" "$file" "$(java -version 2>&1 | head -n 1 | awk -F '"' '{print $2}')"
+    printf "\033[33m──────────────────────────────────────────────────\033[0m\n"
+
+    java -jar "$file" "$@"
+    local exit_code=$?
+
+    printf "\033[33m──────────────────────────────────────────────────\033[0m\n"
+    if [[ $exit_code -eq 0 ]]; then
+        printf "\033[32m[ ✅ OFFLINE ] JAR execution finished gracefully. 😎\033[0m\n"
+    else
+        printf "\033[31m[ ❌ CRASHED ] JAR exited with error code %d! 🛑\033[0m\n" "$exit_code"
+        return $exit_code
+    fi
+}
+
+findjavaclass() {
+    local query="$1"
+
+    if [[ -z "$query" ]]; then
+        printf "\033[33m[ 💡 INFO ] Provide class name to search (e.g. findclass ArrayList or findclass com/example/App)\033[0m\n"
+        return 1
+    fi
+
+    printf "\033[34m[ 🔎 SCANNING ] Searching for '%s' across all JAR archives...\033[0m\n" "$query"
+    printf "\033[33m──────────────────────────────────────────────────\033[0m\n"
+
+    local found=0
+    local jar_file
+
+    for jar_file in **/*.jar(N); do
+        local matches
+        matches=$(jar tf "$jar_file" 2>/dev/null | grep -i "$query")
+        if [[ -n "$matches" ]]; then
+            printf "\033[32m[ 📦 FOUND IN ] %s\033[0m\n" "$jar_file"
+            echo "$matches" | sed 's/^/   ↳ /'
+            found=1
+        fi
+    done
+
+    printf "\033[33m──────────────────────────────────────────────────\033[0m\n"
+    if [[ "$found" -eq 0 ]]; then
+        printf "\033[31m[ 🤷 NOT FOUND ] No classes matching '%s' found in local JARs.\033[0m\n" "$query"
+    else
+        printf "\033[32m[ ✅ DONE ] Search completed! 😎\033[0m\n"
     fi
 }
 
@@ -330,6 +798,16 @@ runspring() {
     fi
     printf "\033[33m──────────────────────────────────────────────────\033[0m\n"
     printf "\033[32m[ ✅ OFFLINE ] Spring Boot context gracefully terminated.\033[0m\n"
+}
+
+killport() {
+    local port="${1:-8080}"
+    local pid=$(lsof -ti :"$port" 2>/dev/null || fuser "$port"/tcp 2>/dev/null)
+    if [[ -n "$pid" ]]; then
+        kill -9 $pid && printf "\033[32m[ 💀 KILLED ] Freed port %s (PID: %s)\033[0m\n" "$port" "$pid"
+    else
+        printf "\033[33m[ 💡 INFO ] Port %s is already free.\033[0m\n" "$port"
+    fi
 }
 
 runc() {
@@ -610,6 +1088,34 @@ runsh() {
     fi
 }
 
+readdocs() {
+    if ! command -v tldr &>/dev/null; then
+        printf "\033[33m[ ⚠️ MISSING ] 'tldr' (tealdeer) binary not found in ~/.local/bin! 🛑\033[0m\n"
+        return 1
+    fi
+
+    local cmd="$1"
+    if [[ -z "$cmd" ]]; then
+        printf "\033[33m[ 💡 INFO ] Usage: readdocs <command> (e.g. 'readdocs grep') or 'readdocs update' to sync cache.\033[0m\n"
+        return 1
+    fi
+
+    if [[ "$cmd" == "update" ]]; then
+        printf "\033[34m[ 🔄 SYNCING ] Updating tealdeer (tldr) offline pages cache...\033[0m\n"
+        tldr --update && printf "\033[32m[ ✅ DONE ] Documentation cache is fresh and ready! 📚😎\033[0m\n"
+        return 0
+    fi
+
+    printf "\033[34m[ 📖 CHEATSHEET ] Fetching quick examples for '%s'...\033[0m\n" "$cmd"
+    printf "\033[33m──────────────────────────────────────────────────\033[0m\n"
+
+    if ! tldr "$cmd" 2>/dev/null; then
+        printf "\033[33m[ 🤷 NOT IN TLDR ] '%s' not found in tldr cache. Falling back to 'man %s'... 📜\033[0m\n" "$cmd" "$cmd"
+        sleep 0.6
+        man "$cmd"
+    fi
+}
+
 workwithmd() {
     if ! command -v glow &>/dev/null; then
         printf "\033[33m[ ⚠️ MISSING ] 'glow' not installed. Run: sudo zypper in glow\033[0m\n"
@@ -653,16 +1159,17 @@ genpass() {
 extract() {
     if [ -f "$1" ]; then
         case "$1" in
-            *.zip)     ripunzip unzip-file "$1" ;;
-            *.tar.*)   tar -xf "$1" ;;
-            *.tgz)     tar -xzf "$1" ;;
-            *.txz)     tar -xJf "$1" ;;
-            *.7z)      7z x "$1" ;;
-            *.rar)     unrar x "$1" ;;
-            *.gz)      gunzip "$1" ;;
-            *.xz)      unxz "$1" ;;
-            *.zst)     unzstd "$1" ;;
-            *)         echo "❌ Unknown archive format: '$1'" ;;
+            *.zip)          ripunzip unzip-file "$1" ;;
+            *.jar|*.war)    ripunzip unzip-file "$1" -d "${1%.*}" ;;
+            *.tar.*)        tar -xf "$1" ;;
+            *.tgz)          tar -xzf "$1" ;;
+            *.txz)          tar -xJf "$1" ;;
+            *.7z)           7z x "$1" ;;
+            *.rar)          unrar x "$1" ;;
+            *.gz)           gunzip "$1" ;;
+            *.xz)           unxz "$1" ;;
+            *.zst)          unzstd "$1" ;;
+            *)              echo "❌ Unknown archive format: '$1'" ;;
         esac
     else
         echo "❌ File '$1' not found"
@@ -671,7 +1178,7 @@ extract() {
 
 update-all() {
     printf "\033[34m=== 1. Upgrading openSUSE Leap Repos & Core System ===\033[0m\n"
-    sudo zypper ref && sudo zypper up -y
+    sudo zypper ref && sudo zypper up
 
     printf "\033[34m=== 2. Upgrading Isolated Pipx Applications ===\033[0m\n"
     if command -v pipx &>/dev/null; then
@@ -682,7 +1189,7 @@ update-all() {
 
     printf "\033[34m=== 3. Upgrading Isolated Flatpak Applications ===\033[0m\n"
     if command -v flatpak &>/dev/null; then
-        flatpak update -y
+        flatpak update
     fi
 
     printf "\033[34m=== 4. Checking Reboot Requirement ===\033[0m\n"
@@ -779,7 +1286,6 @@ alias checksession='echo $XDG_SESSION_TYPE'
 alias checknet="speedtest"
 alias checkports="snitch"
 alias netmonitoring="netwatch"
-alias codestatics="tokei"
 alias changeconfzsh="p10k configure"
 alias workwithgit="lazygit"
 alias workwithdocker="lazydocker"
