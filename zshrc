@@ -134,7 +134,7 @@ syshelp() {
 
     printf "\n\033[33m[ 🔄 UPDATES & MAINTENANCE ]\033[0m\n"
     printf "  \033[32m%-26s\033[0m %s\n" "update-all"               "Upgrade Zypper, Pipx, Flatpak & check reboot status"
-    printf "  \033[32m%-26s\033[0m %s\n" "cleanpip"                 "Purge local pip download cache"
+    printf "  \033[32m%-26s\033[0m %s\n" "cleanpip"                 "Purge pip cache & report freed disk space"
     printf "  \033[32m%-26s\033[0m %s\n" "changeconfzsh"            "Run Powerlevel10k configuration wizard"
 
     printf "\n\033[33m[ 💻 HARDWARE, SESSION & POWER ]\033[0m\n"
@@ -149,10 +149,10 @@ toolshelp() {
     printf "\033[36m║             🛠️ TUI WORKSPACE, FILES & UTILS CHEATSHEET           ║\033[0m\n"
     printf "\033[36m╚══════════════════════════════════════════════════════════════════╝\033[0m\n"
 
-    printf "\n\033[33m[ 🖥️ TUI CLIENTS (WORKWITH*) ]\033[0m\n"
+    printf "\n\033[33m[ 🖥️ TUI & CLI CLIENTS ]\033[0m\n"
     printf "  \033[32m%-26s\033[0m %s\n" "workwithfiles"            "Terminal file manager (yazi)"
     printf "  \033[32m%-26s\033[0m %s\n" "workwithgit"              "Interactive Git TUI client (lazygit)"
-    printf "  \033[32m%-26s\033[0m %s\n" "workwithapi"              "Terminal HTTP/API client (posting)"
+    printf "  \033[32m%-26s\033[0m %s\n" "api <method> <url>"       "Fast terminal HTTP/API client (xh)"
     printf "  \033[32m%-26s\033[0m %s\n" "workwithsql"              "Terminal SQL database TUI (sqlit)"
     printf "  \033[32m%-26s\033[0m %s\n" "workwithmd [file.md]"     "Render Markdown in terminal via glow (default: README)"
     printf "  \033[32m%-26s\033[0m %s\n" "readdocs <cmd|update>"    "Quick command examples via tldr (fallback to man)"
@@ -182,7 +182,7 @@ myhelp() {
             printf "  \033[32mmyhelp media\033[0m  — yt-dlp, FFmpeg, DaVinci Resolve, Demucs & Whisper\n"
             printf "  \033[32mmyhelp ops\033[0m    — Docker, Apache2, Ports, Network & lnav Logs\n"
             printf "  \033[32mmyhelp sys\033[0m    — openSUSE updates, ZSH config, Fastfetch & Power\n"
-            printf "  \033[32mmyhelp tools\033[0m  — Yazi, Lazygit, Posting, Sqlit, Glow, Extract & Passwords\n"
+            printf "  \033[32mmyhelp tools\033[0m  — Yazi, Lazygit, API (xh), Sqlit, Glow, Extract & Passwords\n"
             ;;
         "")
             {
@@ -1251,6 +1251,48 @@ apache() {
     esac
 }
 
+api() {
+    if ! command -v xh &>/dev/null; then
+        printf "\033[33m[ ⚠️ MISSING ] 'xh' not installed. Run: sudo zypper in xh\033[0m\n"
+        return 1
+    fi
+
+    if [[ $# -eq 0 || "$1" == "-h" || "$1" == "--help" || "$1" == "help" ]]; then
+        printf "\033[34m[ 🌐 API CLIENT (xh) USAGE ]\033[0m\n"
+        printf "  \033[32mapi get <url> [params...]\033[0m     — Send HTTP GET request\n"
+        printf "  \033[32mapi post <url> [json/data...]\033[0m — Send HTTP POST JSON request\n"
+        printf "  \033[32mapi put <url> [json/data...]\033[0m  — Send HTTP PUT JSON request\n"
+        printf "  \033[32mapi patch <url> [data...]\033[0m     — Send HTTP PATCH JSON request\n"
+        printf "  \033[32mapi delete <url> [params...]\033[0m  — Send HTTP DELETE request\n"
+        printf "  \033[32mapi head <url>\033[0m                — Fetch response headers only\n"
+        printf "\033[33m[ 💡 EXAMPLE ] api post https://httpbin.org user=kirill role=dev\033[0m\n"
+        return 0
+    fi
+
+    local method="${1:u}"
+    local url="$2"
+
+    case "$method" in
+        GET|POST|PUT|PATCH|DELETE|HEAD|OPTIONS)
+            if [[ -z "$url" ]]; then
+                printf "\033[31m[ ❌ ERROR ] Missing URL! Usage: api %s <url> [args...]\033[0m\n" "${method:l}"
+                return 1
+            fi
+            shift 2
+            printf "\033[34m[ 🚀 %s ] Sending request to %s ...\033[0m\n" "$method" "$url"
+            printf "\033[33m──────────────────────────────────────────────────\033[0m\n"
+            xh "$method" "$url" "$@"
+            local exit_code=$?
+            printf "\033[33m──────────────────────────────────────────────────\033[0m\n"
+            return $exit_code
+            ;;
+        *)
+            printf "\033[31m[ ❌ ERROR ] Unknown HTTP method '%s'! Use: get, post, put, patch, delete, head\033[0m\n" "$1"
+            return 1
+            ;;
+    esac
+}
+
 dimages() {
     docker images "$@"
     printf "\033[34m[ 💿 ] Local images indexed.\033[0m\n"
@@ -1272,8 +1314,23 @@ dclean() {
     fi
 }
 
+cleanpip() {
+    if ! command -v pip &>/dev/null; then
+        printf "\033[33m[ ⚠️ MISSING ] 'pip' not found in current environment!\033[0m\n"
+        return 1
+    fi
 
-alias cleanpip="pip cache purge"
+    local cache_dir="${XDG_CACHE_HOME:-$HOME/.cache}/pip"
+    local before_size="0B"
+    [[ -d "$cache_dir" ]] && before_size=$(du -sh "$cache_dir" 2>/dev/null | awk '{print $1}')
+
+    printf "\033[34m[ 🧹 PIP CACHE ] Purging downloaded wheels & HTTP cache (size: %s)...\033[0m\n" "$before_size"
+    pip cache purge 2>/dev/null
+    rm -rf "$cache_dir"/* 2>/dev/null
+    printf "\033[32m[ ✅ DONE ] Pip cache purged (%s freed)!\033[0m\n" "$before_size"
+}
+
+
 alias myosinfo="fastfetch"
 alias gitprinfo="onefetch"
 alias ls='eza --icons --group-directories-first'
@@ -1289,7 +1346,6 @@ alias netmonitoring="netwatch"
 alias changeconfzsh="p10k configure"
 alias workwithgit="lazygit"
 alias workwithdocker="lazydocker"
-alias workwithapi="posting"
 alias workwithfiles="yazi"
 alias workwithsql="sqlit"
 alias davinci="prime-run /opt/resolve/bin/resolve"
