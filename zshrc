@@ -75,7 +75,7 @@ javahelp() {
     printf "  \033[32m%-26s\033[0m %s\n" "bytecode [File.class]"     "Inspect JVM bytecode via javap (add 'save' for txt)"
     printf "  \033[32m%-26s\033[0m %s\n" "findjavaclass <Name>"     "Search for class inside all local .jar files"
 
-    printf "\n\033[34m[ 💡 TIP ] Run 'javahelp' anytime you forget flags or defaults! 😎\033[0m\n\n"
+    printf "\n\033[34m[ 💡 TIP ] Run '<cmd> --help' on any function for flags & examples! 😎\033[0m\n\n"
 }
 
 mediahelp() {
@@ -88,11 +88,11 @@ mediahelp() {
     printf "  \033[32m%-26s\033[0m %s\n" "davinci"                  "Launch DaVinci Resolve on NVIDIA GPU (prime-run)"
     printf "  \033[32m%-26s\033[0m %s\n" "checkmedia <file>"        "Inspect video/audio codecs & metadata (mediainfo)"
 
-    printf "\n\033[33m[ 🎞️ FFMPEG TRANSCODING ]\033[0m\n"
-    printf "  \033[32m%-26s\033[0m %s\n" "tomov <file>"             "Transcode to DNxHR HQX 10-bit .mov + PCM 24-bit"
-    printf "  \033[32m%-26s\033[0m %s\n" "tomp4 <file>"             "Compress to H.264 MP4 (CRF 20, AAC audio)"
-    printf "  \033[32m%-26s\033[0m %s\n" "extsound <file>"          "Extract audio track to WAV 16-bit 48kHz"
-    printf "  \033[32m%-26s\033[0m %s\n" "towav <file>"             "Upconvert audio to WAV 24-bit PCM 48kHz"
+    printf "\n\033[33m[ 🎞️ FFMPEG TRANSCODING (CUDA / NVENC) ]\033[0m\n"
+    printf "  \033[32m%-26s\033[0m %s\n" "tomov <file> [lb|sq|hq]"  "Transcode to DNxHR .mov + PCM 24-bit (def: sq)"
+    printf "  \033[32m%-26s\033[0m %s\n" "tomp4 <file> [cq]"        "Compress to H.264 MP4 via RTX NVENC + 320k AAC"
+    printf "  \033[32m%-26s\033[0m %s\n" "extsound <file>"          "Extract audio track to studio WAV 24-bit 48kHz"
+    printf "  \033[32m%-26s\033[0m %s\n" "towav <file>"             "Convert audio to studio WAV 24-bit PCM 48kHz"
 
     printf "\n\033[33m[ 🧠 NEURAL NETWORKS (NVIDIA CUDA) ]\033[0m\n"
     printf "  \033[32m%-26s\033[0m %s\n" "splitaudio <file>"        "Separate stems via Demucs AI on CUDA"
@@ -202,33 +202,46 @@ myhelp() {
 }
 
 zin() {
-    if [[ $# -eq 0 ]]; then
-        printf "\033[33m[ 💡 INFO ] Usage: zin <package1> [package2 ...]\033[0m\n"
-        return 1
+    if [[ $# -eq 0 || "$1" == "-h" || "$1" == "--help" || "$1" == "help" ]]; then
+        printf "\033[34m[ 📦 ZIN USAGE ]\033[0m\n"
+        printf "  \033[32mzin <package1> [package2 ...]\033[0m — Install packages via sudo zypper install\n"
+        printf "\033[33m[ 💡 EXAMPLE ] zin htop curl git\033[0m\n"
+        return 0
     fi
     printf "\033[34m[ 📦 ZYPPER ] Installing package(s): %s...\033[0m\n" "$*"
     sudo zypper install "$@"
 }
 
 zin-nogpg() {
-    if [[ $# -eq 0 ]]; then
-        printf "\033[33m[ 💡 INFO ] Usage: zin-nogpg <package_or_rpm>\033[0m\n"
-        return 1
+    if [[ $# -eq 0 || "$1" == "-h" || "$1" == "--help" || "$1" == "help" ]]; then
+        printf "\033[34m[ ⚠️ ZIN-NOGPG USAGE ]\033[0m\n"
+        printf "  \033[32mzin-nogpg <package_or_rpm>\033[0m — Install local RPM or package ignoring GPG signature checks\n"
+        printf "\033[33m[ 💡 EXAMPLE ] zin-nogpg ./app.rpm\033[0m\n"
+        return 0
     fi
     printf "\033[33m[ ⚠️ ZYPPER ] Installing without GPG signature checks: %s...\033[0m\n" "$*"
     sudo zypper --no-gpg-checks install "$@"
 }
 
 zrm() {
-    if [[ $# -eq 0 ]]; then
-        printf "\033[33m[ 💡 INFO ] Usage: zrm <package1> [package2 ...]\033[0m\n"
-        return 1
+    if [[ $# -eq 0 || "$1" == "-h" || "$1" == "--help" || "$1" == "help" ]]; then
+        printf "\033[34m[ 🗑️ ZRM USAGE ]\033[0m\n"
+        printf "  \033[32mzrm <package1> [package2 ...]\033[0m — Remove packages along with unneeded dependencies (-u)\n"
+        printf "\033[33m[ 💡 EXAMPLE ] zrm vlc\033[0m\n"
+        return 0
     fi
     printf "\033[31m[ 🗑️ ZYPPER ] Removing package(s) with unneeded dependencies (-u): %s...\033[0m\n" "$*"
     sudo zypper remove -u "$@"
 }
 
 yt() {
+    if [[ "$1" == "-h" || "$1" == "--help" || "$1" == "help" ]]; then
+        printf "\033[34m[ ⬇️ YT-DLP USAGE ]\033[0m\n"
+        printf "  \033[32myt best \"<url>\"\033[0m  — Download highest available quality\n"
+        printf "  \033[32myt 1080 \"<url>\"\033[0m  — Download up to 1080p MP4 video\n"
+        printf "  \033[32myt mp3 \"<url>\"\033[0m   — Extract best quality MP3 audio\n"
+        return 0
+    fi
     if ! command -v yt-dlp &>/dev/null; then
         printf "\033[33m[ ⚠️ MISSING ] 'yt-dlp' not installed. Run: pipx install yt-dlp\033[0m\n"
         return 1
@@ -253,59 +266,104 @@ yt() {
             printf "\033[32m[ 🎧 EXTRACTED ] High-bitrate MP3 audio saved to current directory (%s)\033[0m\n" "$PWD"
             ;;
         *)
-            printf "\033[33m[ 💡 INFO ] Usage: yt [best|1080|mp3] \"<url>\"\033[0m\n"
+            printf "\033[33m[ 💡 INFO ] Usage: yt [best|1080|mp3] \"<url>\" (or 'yt --help')\033[0m\n"
             ;;
     esac
 }
 
 tomov() {
-    if [ -z "$1" ]; then
-        printf "\033[31m[ ❌ ERROR ] Please specify a file! Example: tomov input.mp4\033[0m\n"
+    if [[ -z "$1" || "$1" == "-h" || "$1" == "--help" || "$1" == "help" ]]; then
+        printf "\033[34m[ 🎞️ TOMOV USAGE ]\033[0m\n"
+        printf "  \033[32mtomov <file> [lb|sq|hq]\033[0m — Transcode to DaVinci MOV + Studio PCM 24-bit Audio (default: sq)\n"
+        printf "    \033[33mlb\033[0m — Low Bandwidth (smallest file size for long screen recordings)\n"
+        printf "    \033[33msq\033[0m — Standard Quality (balanced size & crisp quality, default)\n"
+        printf "    \033[33mhq\033[0m — High Quality 8-bit\n"
+        printf "\033[33m[ 💡 EXAMPLE ] tomov recording.mp4 lb\033[0m\n"
+        return 0
+    fi
+    if [[ ! -f "$1" ]]; then
+        printf "\033[31m[ ❌ ERROR ] File '$1' not found!\033[0m\n"
         return 1
     fi
-    local start_time=$(date +%s)
-    printf "\033[34m[ 🚀 PROCESS ] Transcoding '$1' to DNxHR HQX (.mov)... Hardware rendering enabled.\033[0m\n"
 
-    ffmpeg -i "$1" -c:v dnxhd -profile:v dnxhr_hqx -pix_fmt yuv422p10le -c:a pcm_s24le -ar 48000 "${1%.*}.mov"
+    local quality="${2:-sq}"
+    local profile="dnxhr_sq"
+    case "$quality" in
+        lb) profile="dnxhr_lb" ;;
+        sq) profile="dnxhr_sq" ;;
+        hq) profile="dnxhr_hq" ;;
+        *)  printf "\033[31m[ ❌ ERROR ] Unknown profile '%s'! Use: lb, sq, hq\033[0m\n" "$quality"; return 1 ;;
+    esac
+
+    local start_time=$(date +%s)
+    printf "\033[34m[ 🚀 PROCESS ] Transcoding '$1' to DNxHR (%s) + PCM 24-bit 48kHz (CUDA decode)...\033[0m\n" "$profile"
+
+    ffmpeg -hwaccel cuda -i "$1" -c:v dnxhd -profile:v "$profile" -pix_fmt yuv422p -c:a pcm_s24le -ar 48000 "${1%.*}.mov"
 
     local end_time=$(date +%s)
-    local duration=$((end_time - start_time))
-    printf "\033[32m[ 🎉 DONE ] Successfully encoded in %s seconds!\033[0m\n" "$duration"
+    printf "\033[32m[ 🎉 DONE ] Successfully encoded in %s seconds!\033[0m\n" "$((end_time - start_time))"
 }
 
 tomp4() {
-    if [ -z "$1" ]; then
-        printf "\033[31m[ ❌ ERROR ] Please specify a file! Example: tomp4 master.mov\033[0m\n"
+    if [[ -z "$1" || "$1" == "-h" || "$1" == "--help" || "$1" == "help" ]]; then
+        printf "\033[34m[ 🎬 TOMP4 USAGE ]\033[0m\n"
+        printf "  \033[32mtomp4 <file> [cq]\033[0m — Fast GPU H.264 MP4 via RTX NVENC + 320k AAC Audio (default CQ: 21)\n"
+        printf "\033[33m[ 💡 EXAMPLE ] tomp4 master.mov 20\033[0m\n"
+        return 0
+    fi
+    if [[ ! -f "$1" ]]; then
+        printf "\033[31m[ ❌ ERROR ] File '$1' not found!\033[0m\n"
         return 1
     fi
-    local start_time=$(date +%s)
-    printf "\033[34m[ 🚀 PROCESS ] Compressing '$1' to H.264 MP4 (CRF 20)... High efficiency.\033[0m\n"
 
-    ffmpeg -i "$1" -vcodec libx264 -pix_fmt yuv420p -crf 20 -acodec aac "${1%.*}.mp4"
+    local cq="${2:-21}"
+    local start_time=$(date +%s)
+    printf "\033[34m[ 🚀 NVENC ] Compressing '$1' to H.264 MP4 on RTX 3050 (CQ %s, 320k AAC)...\033[0m\n" "$cq"
+
+    ffmpeg -hwaccel cuda -i "$1" -c:v h264_nvenc -preset p5 -cq "$cq" -pix_fmt yuv420p -c:a aac -b:a 320k "${1%.*}.mp4"
 
     local end_time=$(date +%s)
-    local duration=$((end_time - start_time))
-    printf "\033[32m[ 🎉 DONE ] Compression completed in %s seconds!\033[0m\n" "$duration"
+    printf "\033[32m[ 🎉 DONE ] GPU compression completed in %s seconds!\033[0m\n" "$((end_time - start_time))"
 }
 
 extsound() {
-    if [ -z "$1" ]; then printf "\033[31m[ ❌ ERROR ] Specify a file!\033[0m\n"; return 1; fi
-    printf "\033[34m[ 🚀 PROCESS ] Extracting audio to WAV 16-bit...\033[0m\n"
-    ffmpeg -i "$1" -vn -c:a pcm_s16le -ar 48000 "${1%.*}.wav"
-    printf "\033[32m[ 🎉 DONE ] Audio track saved!\033[0m\n"
+    if [[ -z "$1" || "$1" == "-h" || "$1" == "--help" || "$1" == "help" ]]; then
+        printf "\033[34m[ 🔊 EXTSOUND USAGE ]\033[0m\n"
+        printf "  \033[32mextsound <file>\033[0m — Extract lossless 24-bit / 48kHz PCM WAV audio from video\n"
+        printf "\033[33m[ 💡 EXAMPLE ] extsound lecture.mp4\033[0m\n"
+        return 0
+    fi
+    if [[ ! -f "$1" ]]; then
+        printf "\033[31m[ ❌ ERROR ] File '$1' not found!\033[0m\n"
+        return 1
+    fi
+    printf "\033[34m[ 🚀 PROCESS ] Extracting lossless audio to WAV 24-bit 48kHz...\033[0m\n"
+    ffmpeg -i "$1" -vn -c:a pcm_s24le -ar 48000 "${1%.*}.wav"
+    printf "\033[32m[ 🎉 DONE ] Studio 24-bit WAV audio track saved!\033[0m\n"
 }
 
 towav() {
-    if [ -z "$1" ]; then printf "\033[31m[ ❌ ERROR ] Specify a file!\033[0m\n"; return 1; fi
-    printf "\033[34m[ 🚀 PROCESS ] Upconverting audio to WAV 24-bit PCM...\033[0m\n"
+    if [[ -z "$1" || "$1" == "-h" || "$1" == "--help" || "$1" == "help" ]]; then
+        printf "\033[34m[ 🎵 TOWAV USAGE ]\033[0m\n"
+        printf "  \033[32mtowav <file>\033[0m — Convert any audio file to studio 24-bit / 48kHz PCM WAV\n"
+        printf "\033[33m[ 💡 EXAMPLE ] towav track.mp3\033[0m\n"
+        return 0
+    fi
+    if [[ ! -f "$1" ]]; then
+        printf "\033[31m[ ❌ ERROR ] File '$1' not found!\033[0m\n"
+        return 1
+    fi
+    printf "\033[34m[ 🚀 PROCESS ] Converting audio to studio WAV 24-bit PCM 48kHz...\033[0m\n"
     ffmpeg -i "$1" -ar 48000 -c:a pcm_s24le "${1%.*}.wav"
-    printf "\033[32m[ 🎉 DONE ] Audio upconverted successfully!\033[0m\n"
+    printf "\033[32m[ 🎉 DONE ] Studio 24-bit WAV saved successfully!\033[0m\n"
 }
 
 splitaudio() {
-    if [ -z "$1" ]; then
-        printf "\033[31m[ ❌ ERROR ] Specify an audio file!\033[0m\n"
-        return 1
+    if [[ -z "$1" || "$1" == "-h" || "$1" == "--help" || "$1" == "help" ]]; then
+        printf "\033[34m[ 🧠 SPLITAUDIO USAGE ]\033[0m\n"
+        printf "  \033[32msplitaudio <audio_file>\033[0m — Separate vocals & instruments via Demucs AI on NVIDIA CUDA\n"
+        printf "\033[33m[ 💡 EXAMPLE ] splitaudio song.wav\033[0m\n"
+        return 0
     fi
     if [[ ! -f "$1" ]]; then
         printf "\033[31m[ ❌ ERROR ] Target file '$1' not found in this directory! 🛑\033[0m\n"
@@ -326,9 +384,11 @@ splitaudio() {
 }
 
 createsub() {
-    if [[ -z "$1" ]]; then
-        printf "\033[31m[ ❌ ERROR ] Please specify an audio/video file! Example: createsub movie.wav\033[0m\n"
-        return 1
+    if [[ -z "$1" || "$1" == "-h" || "$1" == "--help" || "$1" == "help" ]]; then
+        printf "\033[34m[ 🎙️ CREATESUB USAGE ]\033[0m\n"
+        printf "  \033[32mcreatesub <media_file>\033[0m — Transcribe speech / generate subtitles via Faster Whisper on CUDA\n"
+        printf "\033[33m[ 💡 EXAMPLE ] createsub interview.wav\033[0m\n"
+        return 0
     fi
     if [[ ! -f "$1" ]]; then
         printf "\033[31m[ ❌ ERROR ] Target file '$1' not found in this directory! 🛑\033[0m\n"
@@ -357,19 +417,28 @@ createsub() {
 }
 
 checkmedia() {
-    if [[ -n "$1" ]]; then
-        if [[ -f "$1" ]]; then
-            printf "\033[34m[ 🔍 ANALYZING ] Fetching technical metadata for '$1'... 🎥📊\033[0m\n"
-            mediainfo "$1"
-        else
-            printf "\033[31m[ ❌ ERROR ] Media file '$1' not found!\033[0m\n"
-        fi
+    if [[ -z "$1" || "$1" == "-h" || "$1" == "--help" || "$1" == "help" ]]; then
+        printf "\033[34m[ 🔍 CHECKMEDIA USAGE ]\033[0m\n"
+        printf "  \033[32mcheckmedia <file>\033[0m — Inspect video/audio codecs, bitrate & metadata via mediainfo\n"
+        printf "\033[33m[ 💡 EXAMPLE ] checkmedia movie.mp4\033[0m\n"
+        return 0
+    fi
+    if [[ -f "$1" ]]; then
+        printf "\033[34m[ 🔍 ANALYZING ] Fetching technical metadata for '$1'... 🎥📊\033[0m\n"
+        mediainfo "$1"
     else
-        printf "\033[33m[ 💡 INFO ] Specify a file! Example: checkmedia movie.mp4\033[0m\n"
+        printf "\033[31m[ ❌ ERROR ] Media file '$1' not found!\033[0m\n"
+        return 1
     fi
 }
 
 checkdocker() {
+    if [[ "$1" == "-h" || "$1" == "--help" || "$1" == "help" ]]; then
+        printf "\033[34m[ 🐳 CHECKDOCKER USAGE ]\033[0m\n"
+        printf "  \033[32mcheckdocker [Dockerfile]\033[0m — Lint Dockerfile best practices via Hadolint (default: Dockerfile)\n"
+        printf "\033[33m[ 💡 EXAMPLE ] checkdocker Dockerfile.prod\033[0m\n"
+        return 0
+    fi
     if ! command -v hadolint &>/dev/null; then
         printf "\033[33m[ ⚠️ MISSING ] 'hadolint' is not installed on openSUSE!\033[0m\n"
         return 1
@@ -380,10 +449,17 @@ checkdocker() {
         hadolint "$file"
     else
         printf "\033[31m[ ❌ ERROR ] Dockerfile '$file' not found!\033[0m\n"
+        return 1
     fi
 }
 
 checkcpp() {
+    if [[ "$1" == "-h" || "$1" == "--help" || "$1" == "help" ]]; then
+        printf "\033[34m[ ⚙️ CHECKCPP USAGE ]\033[0m\n"
+        printf "  \033[32mcheckcpp [file_or_dir]\033[0m — Deep static code analysis for C/C++ via Cppcheck (default: .)\n"
+        printf "\033[33m[ 💡 EXAMPLE ] checkcpp src/main.cpp\033[0m\n"
+        return 0
+    fi
     if ! command -v cppcheck &>/dev/null; then
         printf "\033[33m[ ⚠️ MISSING ] 'cppcheck' not installed. Run: sudo zypper in cppcheck\033[0m\n"
         return 1
@@ -394,10 +470,17 @@ checkcpp() {
         cppcheck --enable=all --inconclusive --force "$target"
     else
         printf "\033[31m[ ❌ ERROR ] Directory or file '$target' not found!\033[0m\n"
+        return 1
     fi
 }
 
 checkshell() {
+    if [[ "$1" == "-h" || "$1" == "--help" || "$1" == "help" ]]; then
+        printf "\033[34m[ 🐚 CHECKSHELL USAGE ]\033[0m\n"
+        printf "  \033[32mcheckshell [script.sh]\033[0m — Lint Bash/POSIX shell script via ShellCheck (default: script.sh)\n"
+        printf "\033[33m[ 💡 EXAMPLE ] checkshell deploy.sh\033[0m\n"
+        return 0
+    fi
     if ! command -v shellcheck &>/dev/null; then
         printf "\033[33m[ ⚠️ MISSING ] 'shellcheck' not installed. Run: sudo zypper in ShellCheck\033[0m\n"
         return 1
@@ -408,10 +491,17 @@ checkshell() {
         shellcheck "$file"
     else
         printf "\033[31m[ ❌ ERROR ] Bash script '$file' not found!\033[0m\n"
+        return 1
     fi
 }
 
 venv() {
+    if [[ "$1" == "-h" || "$1" == "--help" || "$1" == "help" ]]; then
+        printf "\033[34m[ 🐍 VENV USAGE ]\033[0m\n"
+        printf "  \033[32mvenv\033[0m — Create isolated Python '.venv', activate it & upgrade pip\n"
+        printf "\033[33m[ 💡 TIP ] Use 'va' to activate an already existing '.venv' directory.\033[0m\n"
+        return 0
+    fi
     if [[ -d ".venv" ]]; then
         printf "\033[33m[ 💡 INFO ] Virtual environment already exists. Run 'va' to activate it.\033[0m\n"
     else
@@ -431,6 +521,11 @@ venv() {
 }
 
 va() {
+    if [[ "$1" == "-h" || "$1" == "--help" || "$1" == "help" ]]; then
+        printf "\033[34m[ ⚡ VA USAGE ]\033[0m\n"
+        printf "  \033[32mva\033[0m — Activate local Python '.venv' in current directory (exit with 'deactivate')\n"
+        return 0
+    fi
     if [[ -f ".venv/bin/activate" ]]; then
         source .venv/bin/activate
     else
@@ -439,6 +534,12 @@ va() {
 }
 
 runpy() {
+    if [[ "$1" == "-h" || "$1" == "--help" || "$1" == "help" ]]; then
+        printf "\033[34m[ 🐍 RUNPY USAGE ]\033[0m\n"
+        printf "  \033[32mrunpy [script.py]\033[0m — Execute Python script (auto-detects main.py or app.py)\n"
+        printf "\033[33m[ 💡 EXAMPLE ] runpy parser.py\033[0m\n"
+        return 0
+    fi
     if [[ -n "$1" ]]; then
         if [[ -f "$1" ]]; then
             python3 "$1"
@@ -457,6 +558,11 @@ runpy() {
 }
 
 javainfo() {
+    if [[ "$1" == "-h" || "$1" == "--help" || "$1" == "help" ]]; then
+        printf "\033[34m[ ☕ JAVAINFO USAGE ]\033[0m\n"
+        printf "  \033[32mjavainfo\033[0m — Show active JAVA_HOME, JDK/JRE type, Gradle version & all installed JVMs\n"
+        return 0
+    fi
     printf "\033[34m[ ☕ JVM & BUILD ENVIRONMENT ]\033[0m\n"
     printf "\033[33m──────────────────────────────────────────────────\033[0m\n"
     printf "  \033[32m%-15s\033[0m %s\n" "JAVA_HOME:" "${JAVA_HOME:-not set}"
@@ -477,6 +583,13 @@ javainfo() {
 }
 
 usejava() {
+    if [[ "$1" == "-h" || "$1" == "--help" || "$1" == "help" ]]; then
+        printf "\033[34m[ 🔄 USEJAVA USAGE ]\033[0m\n"
+        printf "  \033[32musejava <8|25>\033[0m — Switch active Java version in current terminal session\n"
+        printf "    \033[33m8\033[0m  — OpenJDK 8 JRE (Minecraft 1.8–1.16.5)\n"
+        printf "    \033[33m25\033[0m — OpenJDK 25 JDK (Spring Boot, JavaFX, Vineflower, default)\n"
+        return 0
+    fi
     local ver="$1"
     if [[ -z "$ver" ]]; then
         printf "\033[33m[ 💡 INFO ] Specify version: 'usejava 8' (Minecraft JRE) or 'usejava 25' (Spring JDK)\033[0m\n"
@@ -523,6 +636,13 @@ usejava() {
 }
 
 runjava() {
+    if [[ "$1" == "-h" || "$1" == "--help" || "$1" == "help" ]]; then
+        printf "\033[34m[ ☕ RUNJAVA USAGE ]\033[0m\n"
+        printf "  \033[32mrunjava [File.java]\033[0m — Compile, execute & auto-clean .class bytecode (default: Main.java)\n"
+        printf "\033[33m[ 💡 EXAMPLE ] runjava Algorithm.java\033[0m\n"
+        return 0
+    fi
+
     local file="$1"
     if [[ -z "$file" ]]; then
         if [[ -f "Main.java" ]]; then
@@ -563,6 +683,15 @@ runjava() {
 }
 
 decompilejava() {
+    if [[ "$1" == "-h" || "$1" == "--help" || "$1" == "help" ]]; then
+        printf "\033[34m[ 🔍 DECOMPILEJAVA USAGE ]\033[0m\n"
+        printf "  \033[32mdecompilejava [target]\033[0m — Decompile .class, .jar or .war via Vineflower & open in VS Code\n"
+        printf "    \033[33m.class\033[0m — Decodes into <Name>.java in same directory (default: Main.class)\n"
+        printf "    \033[33m.jar\033[0m   — Unpacks & decodes whole archive into <Name>_src/ folder\n"
+        printf "\033[33m[ 💡 EXAMPLE ] decompilejava Quadrant.class\033[0m\n"
+        return 0
+    fi
+
     local jar_path="$HOME/.local/share/vineflower/vineflower.jar"
 
     if [[ ! -f "$jar_path" ]]; then
@@ -625,6 +754,15 @@ decompilejava() {
 }
 
 bytecode() {
+    if [[ "$1" == "-h" || "$1" == "--help" || "$1" == "help" ]]; then
+        printf "\033[34m[ 🔬 BYTECODE USAGE ]\033[0m\n"
+        printf "  \033[32mbytecode [File.class] [save]\033[0m — Disassemble JVM instructions via javap (default: Main.class)\n"
+        printf "    \033[33m(no 2nd arg)\033[0m — View full disassembly interactively in 'less'\n"
+        printf "    \033[33msave\033[0m         — Dump to <File>_bytecode.txt & open in VS Code\n"
+        printf "\033[33m[ 💡 EXAMPLE ] bytecode App.class save\033[0m\n"
+        return 0
+    fi
+
     local file="${1:-Main.class}"
     local mode="$2"
 
@@ -653,6 +791,13 @@ bytecode() {
 }
 
 buildjar() {
+    if [[ "$1" == "-h" || "$1" == "--help" || "$1" == "help" ]]; then
+        printf "\033[34m[ 📦 BUILDJAR USAGE ]\033[0m\n"
+        printf "  \033[32mbuildjar [Main.java] [out.jar]\033[0m — Compile all *.java in current dir into an executable JAR\n"
+        printf "\033[33m[ 💡 EXAMPLE ] buildjar App.java myapp.jar\033[0m\n"
+        return 0
+    fi
+
     local main_file="${1:-Main.java}"
 
     if [[ ! -f "$main_file" ]]; then
@@ -689,6 +834,13 @@ buildjar() {
 }
 
 runjar() {
+    if [[ "$1" == "-h" || "$1" == "--help" || "$1" == "help" ]]; then
+        printf "\033[34m[ ☕ RUNJAR USAGE ]\033[0m\n"
+        printf "  \033[32mrunjar [app.jar] [args...]\033[0m — Run executable JAR on active JVM (auto-detects single .jar)\n"
+        printf "\033[33m[ 💡 EXAMPLE ] runjar server.jar --port 8080\033[0m\n"
+        return 0
+    fi
+
     local file="$1"
 
     if [[ -z "$file" ]]; then
@@ -727,6 +879,13 @@ runjar() {
 }
 
 findjavaclass() {
+    if [[ "$1" == "-h" || "$1" == "--help" || "$1" == "help" ]]; then
+        printf "\033[34m[ 🔎 FINDJAVACLASS USAGE ]\033[0m\n"
+        printf "  \033[32mfindjavaclass <ClassName>\033[0m — Recursively search for class inside all local .jar files\n"
+        printf "\033[33m[ 💡 EXAMPLE ] findjavaclass Quadrant\033[0m\n"
+        return 0
+    fi
+
     local query="$1"
 
     if [[ -z "$query" ]]; then
@@ -759,6 +918,12 @@ findjavaclass() {
 }
 
 runjavafx() {
+    if [[ "$1" == "-h" || "$1" == "--help" || "$1" == "help" ]]; then
+        printf "\033[34m[ 🖼️ RUNJAVAFX USAGE ]\033[0m\n"
+        printf "  \033[32mrunjavafx\033[0m — Auto-detect Maven (pom.xml) or Gradle (build.gradle) & run JavaFX app\n"
+        return 0
+    fi
+
     printf "\033[34m[ 🖼️ JAVAFX ] Detecting build automation context...\033[0m\n"
 
     if [[ -f "pom.xml" ]]; then
@@ -780,6 +945,12 @@ runjavafx() {
 }
 
 runspring() {
+    if [[ "$1" == "-h" || "$1" == "--help" || "$1" == "help" ]]; then
+        printf "\033[34m[ 🚀 RUNSPRING USAGE ]\033[0m\n"
+        printf "  \033[32mrunspring\033[0m — Auto-detect Maven or Gradle wrapper & start Spring Boot application\n"
+        return 0
+    fi
+
     printf "\033[34m[ 🚀 SPRING BOOT ] Detecting project architecture context...\033[0m\n"
 
     if [[ -f "pom.xml" ]]; then
@@ -801,6 +972,13 @@ runspring() {
 }
 
 killport() {
+    if [[ "$1" == "-h" || "$1" == "--help" || "$1" == "help" ]]; then
+        printf "\033[34m[ 💀 KILLPORT USAGE ]\033[0m\n"
+        printf "  \033[32mkillport [port]\033[0m — Force kill process occupying TCP port (default: 8080)\n"
+        printf "\033[33m[ 💡 EXAMPLE ] killport 3000\033[0m\n"
+        return 0
+    fi
+
     local port="${1:-8080}"
     local pid=$(lsof -ti :"$port" 2>/dev/null || fuser "$port"/tcp 2>/dev/null)
     if [[ -n "$pid" ]]; then
@@ -811,6 +989,13 @@ killport() {
 }
 
 runc() {
+    if [[ "$1" == "-h" || "$1" == "--help" || "$1" == "help" ]]; then
+        printf "\033[34m[ ⚙️ RUNC USAGE ]\033[0m\n"
+        printf "  \033[32mrunc [file.c]\033[0m — Compile with GCC (-O2 -Wall -lm), run & remove binary (default: main.c)\n"
+        printf "\033[33m[ 💡 EXAMPLE ] runc lab1.c\033[0m\n"
+        return 0
+    fi
+
     if ! command -v gcc &>/dev/null; then
         printf "\033[33m[ ⚠️ MISSING ] 'gcc' not installed. Run: sudo zypper in gcc\033[0m\n"
         return 1
@@ -849,6 +1034,13 @@ runc() {
 }
 
 runcpp() {
+    if [[ "$1" == "-h" || "$1" == "--help" || "$1" == "help" ]]; then
+        printf "\033[34m[ ⚙️ RUNCPP USAGE ]\033[0m\n"
+        printf "  \033[32mruncpp [file.cpp]\033[0m — Compile with G++ (C++20 -O2), run & remove binary (default: main.cpp)\n"
+        printf "\033[33m[ 💡 EXAMPLE ] runcpp solution.cpp\033[0m\n"
+        return 0
+    fi
+
     if ! command -v g++ &>/dev/null; then
         printf "\033[33m[ ⚠️ MISSING ] 'g++' not installed. Run: sudo zypper in gcc-c++\033[0m\n"
         return 1
@@ -887,6 +1079,13 @@ runcpp() {
 }
 
 runcs() {
+    if [[ "$1" == "-h" || "$1" == "--help" || "$1" == "help" ]]; then
+        printf "\033[34m[ 🚀 RUNCS USAGE ]\033[0m\n"
+        printf "  \033[32mruncs [project_name]\033[0m — Run existing .csproj via 'dotnet run', or scaffold new console app + open VS Code\n"
+        printf "\033[33m[ 💡 EXAMPLE ] runcs LabWork1\033[0m\n"
+        return 0
+    fi
+
     printf "\033[34m[ 🚀 .NET ] Detecting C# project configuration...\033[0m\n"
 
     local csproj=$(find . -maxdepth 1 -name "*.csproj" | head -n 1)
@@ -922,6 +1121,13 @@ runcs() {
 }
 
 runphp() {
+    if [[ "$1" == "-h" || "$1" == "--help" || "$1" == "help" ]]; then
+        printf "\033[34m[ 🐘 RUNPHP USAGE ]\033[0m\n"
+        printf "  \033[32mrunphp [script.php]\033[0m — Execute single PHP script, or start built-in server on http://localhost:8000 (if index.php exists)\n"
+        printf "\033[33m[ 💡 EXAMPLE ] runphp handler.php\033[0m\n"
+        return 0
+    fi
+
     if [[ -n "$1" ]]; then
         if [[ -f "$1" ]]; then
             printf "\033[34m[ 🐘 PHP ] Executing isolated server-side script '$1'...\033[0m\n"
@@ -943,6 +1149,13 @@ runphp() {
 }
 
 runnode() {
+    if [[ "$1" == "-h" || "$1" == "--help" || "$1" == "help" ]]; then
+        printf "\033[34m[ 📦 RUNNODE USAGE ]\033[0m\n"
+        printf "  \033[32mrunnode [script.js]\033[0m — Run JS file, execute npm 'dev'/'start' from package.json, or launch server.js/app.js\n"
+        printf "\033[33m[ 💡 EXAMPLE ] runnode index.js\033[0m\n"
+        return 0
+    fi
+
     local target="$1"
 
     if [[ -n "$target" ]]; then
@@ -988,6 +1201,13 @@ runnode() {
 }
 
 runlua() {
+    if [[ "$1" == "-h" || "$1" == "--help" || "$1" == "help" ]]; then
+        printf "\033[34m[ 🌙 RUNLUA USAGE ]\033[0m\n"
+        printf "  \033[32mrunlua [script.lua]\033[0m — Execute Lua script (default: main.lua)\n"
+        printf "\033[33m[ 💡 EXAMPLE ] runlua game.lua\033[0m\n"
+        return 0
+    fi
+
     if ! command -v lua &>/dev/null; then
         printf "\033[33m[ ⚠️ MISSING ] 'lua' not installed. Run: sudo zypper in lua54\033[0m\n"
         return 1
@@ -1016,6 +1236,13 @@ runlua() {
 }
 
 runsql() {
+    if [[ "$1" == "-h" || "$1" == "--help" || "$1" == "help" ]]; then
+        printf "\033[34m[ 🐘 RUNSQL USAGE ]\033[0m\n"
+        printf "  \033[32mrunsql [file.sql] [db_name]\033[0m — Run SQL script in PostgreSQL with ON_ERROR_STOP=1 (default: schema.sql / query.sql, db: \$USER)\n"
+        printf "\033[33m[ 💡 EXAMPLE ] runsql init.sql mydb\033[0m\n"
+        return 0
+    fi
+
     if ! command -v psql &>/dev/null; then
         printf "\033[33m[ ⚠️ MISSING ] 'psql' client not installed. Run: sudo zypper in postgresql\033[0m\n"
         return 1
@@ -1058,6 +1285,13 @@ runsql() {
 }
 
 runsh() {
+    if [[ "$1" == "-h" || "$1" == "--help" || "$1" == "help" ]]; then
+        printf "\033[34m[ 🐚 RUNSH USAGE ]\033[0m\n"
+        printf "  \033[32mrunsh [script.sh]\033[0m — Auto-grant +x permissions and run shell script (auto-detects script.sh / build.sh / deploy.sh)\n"
+        printf "\033[33m[ 💡 EXAMPLE ] runsh install.sh\033[0m\n"
+        return 0
+    fi
+
     local file="$1"
     if [[ -z "$file" ]]; then
         if [[ -f "script.sh" ]]; then
@@ -1089,6 +1323,13 @@ runsh() {
 }
 
 readdocs() {
+    if [[ "$1" == "-h" || "$1" == "--help" || "$1" == "help" ]]; then
+        printf "\033[34m[ 📖 READDOCS USAGE ]\033[0m\n"
+        printf "  \033[32mreaddocs <command|update>\033[0m — Fetch quick tldr examples (falls back to 'man') or sync offline cache\n"
+        printf "\033[33m[ 💡 EXAMPLE ] readdocs tar\033[0m\n"
+        return 0
+    fi
+
     if ! command -v tldr &>/dev/null; then
         printf "\033[33m[ ⚠️ MISSING ] 'tldr' (tealdeer) binary not found in ~/.local/bin! 🛑\033[0m\n"
         return 1
@@ -1117,6 +1358,13 @@ readdocs() {
 }
 
 workwithmd() {
+    if [[ "$1" == "-h" || "$1" == "--help" || "$1" == "help" ]]; then
+        printf "\033[34m[ 📝 WORKWITHMD USAGE ]\033[0m\n"
+        printf "  \033[32mworkwithmd [file.md]\033[0m — Render formatted Markdown in terminal via Glow (default: README.md)\n"
+        printf "\033[33m[ 💡 EXAMPLE ] workwithmd NOTES.md\033[0m\n"
+        return 0
+    fi
+
     if ! command -v glow &>/dev/null; then
         printf "\033[33m[ ⚠️ MISSING ] 'glow' not installed. Run: sudo zypper in glow\033[0m\n"
         return 1
@@ -1133,6 +1381,13 @@ workwithmd() {
 }
 
 workwithlogs() {
+    if [[ "$1" == "-h" || "$1" == "--help" || "$1" == "help" ]]; then
+        printf "\033[34m[ 📜 WORKWITHLOGS USAGE ]\033[0m\n"
+        printf "  \033[32mworkwithlogs [file_or_dir]\033[0m — Launch interactive log navigator lnav (default: system/journal logs)\n"
+        printf "\033[33m[ 💡 EXAMPLE ] workwithlogs /var/log/apache2/\033[0m\n"
+        return 0
+    fi
+
     if ! command -v lnav &>/dev/null; then
         printf "\033[33m[ ⚠️ MISSING ] 'lnav' not installed in ~/.local/bin!\033[0m\n"
         return 1
@@ -1151,13 +1406,27 @@ workwithlogs() {
 }
 
 genpass() {
+    if [[ "$1" == "-h" || "$1" == "--help" || "$1" == "help" ]]; then
+        printf "\033[34m[ 🔐 GENPASS USAGE ]\033[0m\n"
+        printf "  \033[32mgenpass [length]\033[0m — Generate strong random password via pwgen & copy to clipboard (default: 20)\n"
+        printf "\033[33m[ 💡 EXAMPLE ] genpass 32\033[0m\n"
+        return 0
+    fi
+
     local len="${1:-20}"
     pwgen -sy "$len" 1 | tee >(wl-copy 2>/dev/null || xclip -selection clipboard 2>/dev/null)
     printf "\033[32m[ 🔐 COPIED ] Strong %s-char password generated & copied to clipboard!\033[0m\n" "$len"
 }
 
 extract() {
-    if [ -f "$1" ]; then
+    if [[ -z "$1" || "$1" == "-h" || "$1" == "--help" || "$1" == "help" ]]; then
+        printf "\033[34m[ 🗜️ EXTRACT USAGE ]\033[0m\n"
+        printf "  \033[32mextract <archive>\033[0m — Universal archive unpacker (.zip, .jar/.war, .tar.*, .tgz, .txz, .7z, .rar, .gz, .xz, .zst)\n"
+        printf "\033[33m[ 💡 EXAMPLE ] extract project.tar.zst\033[0m\n"
+        return 0
+    fi
+
+    if [[ -f "$1" ]]; then
         case "$1" in
             *.zip)          ripunzip unzip-file "$1" ;;
             *.jar|*.war)    ripunzip unzip-file "$1" -d "${1%.*}" ;;
@@ -1169,14 +1438,21 @@ extract() {
             *.gz)           gunzip "$1" ;;
             *.xz)           unxz "$1" ;;
             *.zst)          unzstd "$1" ;;
-            *)              echo "❌ Unknown archive format: '$1'" ;;
+            *)              printf "\033[31m[ ❌ ERROR ] Unknown archive format: '$1'\033[0m\n"; return 1 ;;
         esac
     else
-        echo "❌ File '$1' not found"
+        printf "\033[31m[ ❌ ERROR ] Archive file '$1' not found!\033[0m\n"
+        return 1
     fi
 }
 
 update-all() {
+    if [[ "$1" == "-h" || "$1" == "--help" || "$1" == "help" ]]; then
+        printf "\033[34m[ 🔄 UPDATE-ALL USAGE ]\033[0m\n"
+        printf "  \033[32mupdate-all\033[0m — Sync & upgrade openSUSE Zypper packages, Pipx tools, Flatpak apps & check reboot status\n"
+        return 0
+    fi
+
     printf "\033[34m=== 1. Upgrading openSUSE Leap Repos & Core System ===\033[0m\n"
     sudo zypper ref && sudo zypper up
 
@@ -1206,6 +1482,12 @@ update-all() {
 }
 
 up-venv() {
+    if [[ "$1" == "-h" || "$1" == "--help" || "$1" == "help" ]]; then
+        printf "\033[34m[ 🐍 UP-VENV USAGE ]\033[0m\n"
+        printf "  \033[32mup-venv\033[0m — Upgrade all outdated pip packages inside active VIRTUAL_ENV or local '.venv'\n"
+        return 0
+    fi
+
     if [[ -n "$VIRTUAL_ENV" ]]; then
         printf "\033[34m[ ⚙️ PYTHON ] Upgrading outdated packages inside active virtual environment...\033[0m\n"
         pip list --outdated --format=columns 2>/dev/null | tail -n +3 | awk '{print $1}' | xargs -r -n1 pip install --upgrade 2>/dev/null
@@ -1221,6 +1503,12 @@ up-venv() {
 }
 
 up-node() {
+    if [[ "$1" == "-h" || "$1" == "--help" || "$1" == "help" ]]; then
+        printf "\033[34m[ 📦 UP-NODE USAGE ]\033[0m\n"
+        printf "  \033[32mup-node [package.json]\033[0m — Update all local npm dependencies in project directory\n"
+        return 0
+    fi
+
     local target="${1:-package.json}"
     if [[ -f "$target" ]]; then
         printf "\033[34m[ 📦 NODE ] Upgrading all local npm dependencies based on '$target'... 📦🚀\033[0m\n"
@@ -1233,6 +1521,13 @@ up-node() {
 }
 
 apache() {
+    if [[ -z "$1" || "$1" == "-h" || "$1" == "--help" || "$1" == "help" ]]; then
+        printf "\033[34m[ 🌐 APACHE USAGE ]\033[0m\n"
+        printf "  \033[32mapache <start|stop|status|restart>\033[0m — Control Apache2 & PHP-FPM systemd services\n"
+        printf "\033[33m[ 💡 EXAMPLE ] apache start\033[0m\n"
+        return 0
+    fi
+
     case "$1" in
         start)
             sudo systemctl start apache2 php-fpm && \
@@ -1246,7 +1541,8 @@ apache() {
             sudo systemctl "$1" apache2 php-fpm
             ;;
         *)
-            printf "\033[33m[ 💡 INFO ] Usage: apache [start|stop|status|restart]\033[0m\n"
+            printf "\033[31m[ ❌ ERROR ] Unknown action '%s'! Usage: apache [start|stop|status|restart]\033[0m\n" "$1"
+            return 1
             ;;
     esac
 }
@@ -1294,16 +1590,34 @@ api() {
 }
 
 dimages() {
+    if [[ "$1" == "-h" || "$1" == "--help" || "$1" == "help" ]]; then
+        printf "\033[34m[ 💿 DIMAGES USAGE ]\033[0m\n"
+        printf "  \033[32mdimages [docker_args...]\033[0m — List locally stored Docker images\n"
+        return 0
+    fi
+
     docker images "$@"
     printf "\033[34m[ 💿 ] Local images indexed.\033[0m\n"
 }
 
 dps() {
+    if [[ "$1" == "-h" || "$1" == "--help" || "$1" == "help" ]]; then
+        printf "\033[34m[ 🐋 DPS USAGE ]\033[0m\n"
+        printf "  \033[32mdps [docker_args...]\033[0m — List all Docker containers (Names, Status & Ports table)\n"
+        return 0
+    fi
+
     docker ps -a --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}' "$@"
     printf "\033[32m[ 🐋 ] Active containers logged successfully.\033[0m\n"
 }
 
 dclean() {
+    if [[ "$1" == "-h" || "$1" == "--help" || "$1" == "help" ]]; then
+        printf "\033[34m[ 🔥 DCLEAN USAGE ]\033[0m\n"
+        printf "  \033[32mdclean\033[0m — Hard purge all unused Docker containers, images, networks & volumes (with confirmation)\n"
+        return 0
+    fi
+
     printf "\033[33m[ ⚠️ WARNING ] Hard purging unused Docker infrastructure... Are you sure, bro? [y/N]: \033[0m"
     read -r response
     if [[ "$response" =~ ^[Yy]$ ]]; then
@@ -1315,6 +1629,12 @@ dclean() {
 }
 
 cleanpip() {
+    if [[ "$1" == "-h" || "$1" == "--help" || "$1" == "help" ]]; then
+        printf "\033[34m[ 🧹 CLEANPIP USAGE ]\033[0m\n"
+        printf "  \033[32mcleanpip\033[0m — Purge downloaded pip wheels & HTTP cache and report freed disk space\n"
+        return 0
+    fi
+
     if ! command -v pip &>/dev/null; then
         printf "\033[33m[ ⚠️ MISSING ] 'pip' not found in current environment!\033[0m\n"
         return 1
