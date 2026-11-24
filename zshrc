@@ -57,8 +57,8 @@ javahelp() {
     printf "\033[36m╚══════════════════════════════════════════════════════════════════╝\033[0m\n"
 
     printf "\n\033[33m[ 🔧 ENVIRONMENT & VERSIONS ]\033[0m\n"
-    printf "  \033[32m%-26s\033[0m %s\n" "javainfo"                 "Show active Java, Gradle & all installed JDKs"
-    printf "  \033[32m%-26s\033[0m %s\n" "usejava <8|25>"           "Switch active JDK in current terminal session"
+    printf "  \033[32m%-26s\033[0m %s\n" "javainfo"                 "Show active Java, Gradle & all installed JVMs"
+    printf "  \033[32m%-26s\033[0m %s\n" "usejava <8|17|21|25>"     "Switch active JVM in current terminal session"
 
     printf "\n\033[33m[ 🚀 EXECUTION & FRAMEWORKS ]\033[0m\n"
     printf "  \033[32m%-26s\033[0m %s\n" "runjava [File.java]"      "Compile, run & clean .class (default: Main.java)"
@@ -177,7 +177,7 @@ myhelp() {
         -h|--help|help)
             printf "\033[34m[ 📚 MYHELP USAGE ]\033[0m\n"
             printf "  \033[32mmyhelp\033[0m        — Open full cheatsheet in interactive viewer (press 'q' to exit, '/' to search)\n"
-            printf "  \033[32mmyhelp java\033[0m   — Java 8/25, Gradle, Spring, JAR & Vineflower\n"
+            printf "  \033[32mmyhelp java\033[0m   — Java 8/17/21/25, Gradle, Spring, JAR & Vineflower\n"
             printf "  \033[32mmyhelp dev\033[0m    — Python, C/C++, C#, PHP, Node, Lua, SQL, Shell & Linters\n"
             printf "  \033[32mmyhelp media\033[0m  — yt-dlp, FFmpeg, DaVinci Resolve, Demucs & Whisper\n"
             printf "  \033[32mmyhelp ops\033[0m    — Docker, Apache2, Ports, Network & lnav Logs\n"
@@ -585,26 +585,29 @@ javainfo() {
 usejava() {
     if [[ "$1" == "-h" || "$1" == "--help" || "$1" == "help" ]]; then
         printf "\033[34m[ 🔄 USEJAVA USAGE ]\033[0m\n"
-        printf "  \033[32musejava <8|25>\033[0m — Switch active Java version in current terminal session\n"
-        printf "    \033[33m8\033[0m  — OpenJDK 8 JRE (Minecraft 1.8–1.16.5)\n"
-        printf "    \033[33m25\033[0m — OpenJDK 25 JDK (Spring Boot, JavaFX, Vineflower, default)\n"
+        printf "  \033[32musejava <8|17|21|25>\033[0m — Switch active Java version in current terminal session\n"
+        printf "    \033[33m8\033[0m  — OpenJDK 8 JRE  (Minecraft 1.8–1.16.5)\n"
+        printf "    \033[33m17\033[0m — OpenJDK 17 JDK (Minecraft 1.17–1.20.4)\n"
+        printf "    \033[33m21\033[0m — OpenJDK 21 JDK (Minecraft 1.20.5–1.21.x)\n"
+        printf "    \033[33m25\033[0m — OpenJDK 25 JDK (Minecraft 26.1+, Spring Boot, JavaFX, Vineflower, default)\n"
         return 0
     fi
+
     local ver="$1"
     if [[ -z "$ver" ]]; then
-        printf "\033[33m[ 💡 INFO ] Specify version: 'usejava 8' (Minecraft JRE) or 'usejava 25' (Spring JDK)\033[0m\n"
+        printf "\033[33m[ 💡 INFO ] Specify version: 'usejava <8|17|21|25>'\033[0m\n"
         javainfo
         return 1
     fi
 
     local target_jvm=""
-    if [[ "$ver" == "8" ]]; then
-        target_jvm="/usr/lib64/jvm/java-1.8.0-openjdk-1.8.0"
-    elif [[ "$ver" == "25" ]]; then
-        target_jvm="/usr/lib64/jvm/java-25-openjdk-25"
-    else
-        target_jvm=$(ls -d /usr/lib64/jvm/java-${ver}-openjdk* 2>/dev/null | head -n 1)
-    fi
+    case "$ver" in
+        8)  target_jvm="/usr/lib64/jvm/java-1.8.0-openjdk-1.8.0" ;;
+        17) target_jvm="/usr/lib64/jvm/java-17-openjdk-17" ;;
+        21) target_jvm="/usr/lib64/jvm/java-21-openjdk-21" ;;
+        25) target_jvm="/usr/lib64/jvm/java-25-openjdk-25" ;;
+        *)  target_jvm=$(ls -d /usr/lib64/jvm/java-${ver}-openjdk* 2>/dev/null | head -n 1) ;;
+    esac
 
     target_jvm="${target_jvm%/}"
 
