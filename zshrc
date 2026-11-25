@@ -14,6 +14,9 @@ export GRADLE_HOME="/opt/gradle/gradle-9.9.1"
 export JAVA_HOME="/usr/lib64/jvm/java-25-openjdk-25"
 export PATH="$JAVA_HOME/bin:$GRADLE_HOME/bin:$PATH"
 
+export ANDROID_HOME="$HOME/Android/Sdk"
+export PATH="$ANDROID_HOME/platform-tools:$ANDROID_HOME/cmdline-tools/latest/bin:$PATH"
+
 export DOTNET_CLI_TELEMETRY_OPTOUT=1
 
 ZSH_THEME="powerlevel10k/powerlevel10k"
